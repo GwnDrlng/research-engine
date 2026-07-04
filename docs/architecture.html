@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Research Engine — System Architecture</title>
+<title>Research Engine · System Architecture</title>
 <style>
   :root{
     --paper:#eef0ec; --surface:#ffffff; --surface-2:#f6f7f4;
@@ -162,7 +162,7 @@
 
   <div class="term" role="img" aria-label="Terminal showing a user typing a research request">
     <div class="term__bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      <span class="term__title">~/research-engine — claude</span></div>
+      <span class="term__title">~/research-engine · claude</span></div>
     <div class="term__body">
       <span class="p">›</span> <span class="u">I need to do user research on checkout drop-off</span><span class="caret"></span>
       <span class="c"># → CLAUDE.md router fires → /research orchestrator takes it from here</span>
@@ -173,22 +173,22 @@
   <div class="stack">
     <div class="layer">
       <p class="layer__tag">Layer 0 · Configuration</p>
-      <p class="layer__name">CLAUDE.md — the preferences layer <span class="file">CLAUDE.md</span></p>
+      <p class="layer__name">CLAUDE.md, the preferences layer <span class="file">CLAUDE.md</span></p>
       <p class="layer__desc">The persistent system prompt. Role, the golden rule, the 4-element prompt
       discipline, standing anti-fabrication constraints, and the router that reads intent and dispatches.</p>
     </div>
     <span class="arrow" aria-hidden="true">↓</span>
     <div class="layer">
       <p class="layer__tag">Layer 1 · Orchestration</p>
-      <p class="layer__name">/research — the router <span class="file">.claude/skills/research</span></p>
-      <p class="layer__desc">Pressure-tests the brief with 5–7 clarifying questions, scaffolds a study
+      <p class="layer__name">/research, the router <span class="file">.claude/skills/research</span></p>
+      <p class="layer__desc">Pressure-tests the brief with 5 to 7 clarifying questions, scaffolds a study
       folder under <span class="file">projects/</span>, and hands off to the right phase skill.</p>
     </div>
     <span class="arrow" aria-hidden="true">↓</span>
     <p class="flowlabel" style="text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Layer 2 · Phase skills</p>
     <div class="phases">
       <div class="phase"><span class="n">01 · PLAN</span><h4>research-plan</h4><p>Questions → method → screener → discussion guide.</p></div>
-      <div class="phase"><span class="n">02 · CAPTURE</span><h4>research-interview</h4><p>Guide audit; de-identified clean transcripts.</p></div>
+      <div class="phase"><span class="n">02 · CAPTURE</span><h4>research-interview</h4><p>Guide audit, de-identified clean transcripts.</p></div>
       <div class="phase"><span class="n">03 · SYNTHESIZE</span><h4>research-synthesis</h4><p>Code → cluster → self-audit into themes.</p></div>
       <div class="phase"><span class="n">04 · REPORT</span><h4>research-insights</h4><p>6-part insights, format-shifted.</p></div>
     </div>
@@ -199,7 +199,7 @@
     <div class="rail rail--judge">
       <p class="k">Quality gate</p>
       <h3>ux-research-judge</h3>
-      <p class="layer__desc" style="margin-bottom:2px">A <em>separate</em> subagent — uncontaminated by
+      <p class="layer__desc" style="margin-bottom:2px">A <em>separate</em> subagent, uncontaminated by
       the drafting context. Scores against <span class="file">rubrics/</span>.</p>
       <ul>
         <li>Per-criterion PASS / WARN / FAIL + ranked fixes</li>
@@ -214,7 +214,7 @@
       <p class="layer__desc" style="margin-bottom:2px"><span class="file">governance/</span> +
       a <span class="file">PreToolUse</span> hook.</p>
       <ul>
-        <li>PII → deliverables use P1..Pn; raw data stays gitignored</li>
+        <li>PII → deliverables use P1..Pn, raw data stays gitignored</li>
         <li>Approval gate (<span style="font-family:var(--mono)">GATE_MODE: warn</span>, bypassable)</li>
         <li>Anti-fabrication rules</li>
         <li>No external sending without confirmation</li>
@@ -225,15 +225,15 @@
   <p class="sectlabel">Proven, not assumed</p>
   <div class="layer">
     <p class="layer__tag">Regression guard</p>
-    <p class="layer__name">evals/ — meta-evaluating the judge <span class="file">evals/run-evals.sh</span></p>
+    <p class="layer__name">evals/, meta-evaluating the judge <span class="file">evals/run-evals.sh</span></p>
     <p class="layer__desc">Synthetic fixtures with planted defects (a leading discussion guide, an
     over-claimed synthesis) plus clean counterparts. The harness spawns the judge and asserts it flags
-    the bad and passes the good — so tuning a rubric can't silently break the gate.</p>
+    the bad and passes the good, so tuning a rubric can't silently break the gate.</p>
   </div>
 
-  <p class="principle"><b>The value isn't in generating faster;</b> it's in evaluating better.
-  AI drafts and organizes — human judgment is the product.</p>
-  <p class="foot">research-engine · MIT · a Claude Code–native framework</p>
+  <p class="principle"><b>The value isn't in generating faster.</b> It's in evaluating better.
+  AI drafts and organizes. Human judgment is the product.</p>
+  <p class="foot">research-engine · MIT · a Claude Code-native framework</p>
 </div>
 </body>
 </html>
