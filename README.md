@@ -18,12 +18,13 @@ Its guiding rule:
 
 ## Visual overview
 
-Rendered pages open in a new browser tab.
+**[Open the live visual overview](https://gwndrlng.github.io/research-engine/)**, a hosted hub where
+each view opens in its own browser tab.
 
-- 🗺️ <a href="https://gwndrlng.github.io/research-engine/docs/architecture.html" target="_blank" rel="noopener"><strong>System architecture</strong></a>, how the pieces fit together
-  · <a href="docs/architecture.html">source</a>
-- 🚶 <a href="https://gwndrlng.github.io/research-engine/docs/user-journey.html" target="_blank" rel="noopener"><strong>User journey</strong></a>, the end-to-end experience step by step
-  · <a href="docs/user-journey.html">source</a>
+- 🗺️ [System architecture](https://gwndrlng.github.io/research-engine/docs/architecture.html), how the pieces fit together
+  · [source](docs/architecture.html)
+- 🚶 [User journey](https://gwndrlng.github.io/research-engine/docs/user-journey.html), the end-to-end experience step by step
+  · [source](docs/user-journey.html)
 
 ## Quickstart
 

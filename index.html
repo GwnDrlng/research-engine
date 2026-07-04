@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research Engine · Visual Overview</title>
+<style>
+  :root{
+    --paper:#eef0ec; --surface:#ffffff; --surface-2:#f6f7f4;
+    --ink:#1b2530; --muted:#5b6772; --line:#d8ddd6;
+    --teal:#0d7d72; --teal-deep:#0a5d55; --teal-wash:#dcebe8;
+    --amber:#9a6410; --amber-wash:#f3e7d1;
+    --coral:#b0472b; --coral-wash:#f2ddd5;
+    --serif:ui-serif,"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --maxw:860px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#0e1418; --surface:#161e25; --surface-2:#1b242c;
+      --ink:#e7ece9; --muted:#97a4aa; --line:#28333c;
+      --teal:#43b3a5; --teal-deep:#5cc3b6; --teal-wash:#123029;
+      --amber:#d59a3f; --amber-wash:#2e2717;
+      --coral:#dd7a5e; --coral-wash:#31201a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0e1418; --surface:#161e25; --surface-2:#1b242c;
+    --ink:#e7ece9; --muted:#97a4aa; --line:#28333c;
+    --teal:#43b3a5; --teal-deep:#5cc3b6; --teal-wash:#123029;
+    --amber:#d59a3f; --amber-wash:#2e2717;
+    --coral:#dd7a5e; --coral-wash:#31201a;
+  }
+  :root[data-theme="light"]{
+    --paper:#eef0ec; --surface:#ffffff; --surface-2:#f6f7f4;
+    --ink:#1b2530; --muted:#5b6772; --line:#d8ddd6;
+    --teal:#0d7d72; --teal-deep:#0a5d55; --teal-wash:#dcebe8;
+    --amber:#9a6410; --amber-wash:#f3e7d1;
+    --coral:#b0472b; --coral-wash:#f2ddd5;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+    padding:clamp(28px,6vw,72px) 20px 72px;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--teal-deep); margin:0 0 14px}
+  h1{font-family:var(--serif); font-weight:600; letter-spacing:-.01em;
+    font-size:clamp(30px,5.4vw,50px); line-height:1.05; margin:0 0 16px; text-wrap:balance}
+  .lede{font-size:clamp(16px,2.2vw,19px); color:var(--muted); max-width:60ch; margin:0 0 4px}
+
+  .cards{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:34px}
+  @media (max-width:620px){.cards{grid-template-columns:1fr}}
+
+  a.card{
+    display:flex; flex-direction:column; text-decoration:none; color:inherit;
+    border:1px solid var(--line); border-radius:14px; background:var(--surface);
+    padding:22px 22px 18px; position:relative; overflow:hidden;
+    transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    box-shadow:0 14px 30px -28px rgba(0,0,0,.55);
+  }
+  a.card:hover{transform:translateY(-3px); border-color:var(--teal);
+    box-shadow:0 22px 44px -26px rgba(0,0,0,.5)}
+  a.card:focus-visible{outline:3px solid var(--teal); outline-offset:3px}
+  .card--arch{border-top:4px solid var(--teal)}
+  .card--journey{border-top:4px solid var(--amber)}
+
+  .glyph{font-size:30px; line-height:1; margin-bottom:14px}
+  a.card h2{font-family:var(--serif); font-size:23px; font-weight:600; margin:0 0 6px}
+  a.card p{font-size:14.5px; color:var(--muted); margin:0 0 18px}
+  .open{margin-top:auto; font-family:var(--mono); font-size:12px; letter-spacing:.04em;
+    color:var(--teal-deep); display:inline-flex; align-items:center; gap:6px}
+  .card--journey .open{color:var(--amber)}
+  .open svg{width:13px; height:13px}
+
+  .foot{margin-top:34px; border-top:1px solid var(--line); padding-top:18px;
+    font-family:var(--mono); font-size:12.5px; color:var(--muted)}
+  .foot a{color:var(--teal-deep); text-decoration:none}
+  .foot a:hover{text-decoration:underline}
+
+  @media (prefers-reduced-motion:reduce){a.card{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Research Engine · Visual Overview</p>
+  <h1>Two views of how Research Engine works.</h1>
+  <p class="lede">A Claude Code-native framework that makes UX and Product research repeatable,
+  governed, and evaluated by a separate LLM-as-judge. Pick a view. Each opens in a new tab.</p>
+
+  <div class="cards">
+    <a class="card card--arch" href="docs/architecture.html" target="_blank" rel="noopener">
+      <span class="glyph" aria-hidden="true">🗺️</span>
+      <h2>System architecture</h2>
+      <p>How the pieces fit together, from the config layer to the router, the phase skills, the
+      judge, and the guardrails.</p>
+      <span class="open">Open in new tab
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
+      </span>
+    </a>
+    <a class="card card--journey" href="docs/user-journey.html" target="_blank" rel="noopener">
+      <span class="glyph" aria-hidden="true">🚶</span>
+      <h2>User journey</h2>
+      <p>The end-to-end experience step by step, from a plain-language ask to an insight a PM can
+      act on Monday.</p>
+      <span class="open">Open in new tab
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
+      </span>
+    </a>
+  </div>
+
+  <p class="foot">research-engine · MIT ·
+    <a href="https://github.com/GwnDrlng/research-engine" target="_blank" rel="noopener">view the repo on GitHub</a>
+  </p>
+</div>
+</body>
+</html>
