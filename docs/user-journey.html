@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research Engine — User Journey</title>
+<style>
+  :root{
+    --paper:#eef0ec; --surface:#ffffff; --surface-2:#f6f7f4;
+    --ink:#1b2530; --muted:#5b6772; --line:#d8ddd6;
+    --teal:#0d7d72; --teal-deep:#0a5d55; --teal-wash:#dcebe8;
+    --amber:#9a6410; --amber-wash:#f3e7d1;
+    --coral:#b0472b; --coral-wash:#f2ddd5;
+    --serif:ui-serif,"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --maxw:860px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#0e1418; --surface:#161e25; --surface-2:#1b242c;
+      --ink:#e7ece9; --muted:#97a4aa; --line:#28333c;
+      --teal:#43b3a5; --teal-deep:#5cc3b6; --teal-wash:#123029;
+      --amber:#d59a3f; --amber-wash:#2e2717;
+      --coral:#dd7a5e; --coral-wash:#31201a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0e1418; --surface:#161e25; --surface-2:#1b242c;
+    --ink:#e7ece9; --muted:#97a4aa; --line:#28333c;
+    --teal:#43b3a5; --teal-deep:#5cc3b6; --teal-wash:#123029;
+    --amber:#d59a3f; --amber-wash:#2e2717;
+    --coral:#dd7a5e; --coral-wash:#31201a;
+  }
+  :root[data-theme="light"]{
+    --paper:#eef0ec; --surface:#ffffff; --surface-2:#f6f7f4;
+    --ink:#1b2530; --muted:#5b6772; --line:#d8ddd6;
+    --teal:#0d7d72; --teal-deep:#0a5d55; --teal-wash:#dcebe8;
+    --amber:#9a6410; --amber-wash:#f3e7d1;
+    --coral:#b0472b; --coral-wash:#f2ddd5;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+    padding:clamp(20px,5vw,64px) 20px 80px;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--teal-deep); margin:0 0 14px}
+  h1{font-family:var(--serif); font-weight:600; letter-spacing:-.01em;
+    font-size:clamp(30px,5.4vw,50px); line-height:1.05; margin:0 0 16px; text-wrap:balance}
+  .lede{font-size:clamp(16px,2.2vw,19px); color:var(--muted); max-width:60ch; margin:0 0 10px}
+
+  .legend{display:flex; gap:18px; flex-wrap:wrap; margin:22px 0 8px;
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; color:var(--muted)}
+  .legend span{display:inline-flex; align-items:center; gap:7px}
+  .swatch{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .sw-teal{background:var(--teal)} .sw-amber{background:var(--amber)} .sw-coral{background:var(--coral)}
+
+  /* timeline */
+  .tl{position:relative; margin-top:34px; padding-left:52px}
+  .tl::before{content:""; position:absolute; left:19px; top:8px; bottom:14px; width:2px;
+    background:linear-gradient(var(--teal),var(--line))}
+  .step{position:relative; margin-bottom:26px}
+  .node{position:absolute; left:-52px; top:0; width:40px; height:40px; border-radius:50%;
+    background:var(--surface); border:2px solid var(--teal); color:var(--teal-deep);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:14px; font-weight:600; z-index:1}
+  .step--start .node{background:var(--teal); color:#fff; border-color:var(--teal)}
+  .step--start .node svg{display:block}
+
+  .card{border:1px solid var(--line); border-radius:12px; background:var(--surface);
+    padding:16px 18px; box-shadow:0 12px 28px -26px rgba(0,0,0,.55)}
+  .card h3{font-family:var(--serif); font-size:19px; font-weight:600; margin:0 0 3px; text-wrap:balance}
+  .skill{font-family:var(--mono); font-size:11.5px; color:var(--teal-deep);
+    background:var(--teal-wash); padding:1px 7px; border-radius:5px}
+  .row{display:grid; grid-template-columns:auto 1fr; gap:10px; margin-top:10px; align-items:baseline}
+  .who{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); padding-top:2px; white-space:nowrap}
+  .said{font-size:14.5px; margin:0}
+  .said.you{color:var(--ink)} .said.eng{color:var(--muted)}
+
+  .chip{display:inline-flex; align-items:center; gap:6px; margin-top:12px;
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.02em;
+    padding:5px 10px; border-radius:999px; border:1px solid}
+  .chip--judge{color:var(--amber); border-color:var(--amber); background:var(--amber-wash)}
+  .chip--gov{color:var(--coral); border-color:var(--coral); background:var(--coral-wash)}
+  .chip b{font-weight:600}
+
+  .principle{margin-top:38px; border-top:1px solid var(--line); padding-top:22px;
+    font-family:var(--serif); font-style:italic; font-size:clamp(19px,3vw,24px);
+    line-height:1.35; text-wrap:balance}
+  .principle b{font-style:normal; color:var(--teal-deep)}
+  .foot{margin-top:24px; font-family:var(--mono); font-size:12px; color:var(--muted)}
+
+  @media (max-width:520px){
+    .tl{padding-left:44px} .node{left:-44px;width:34px;height:34px;font-size:13px}
+    .tl::before{left:16px}
+    .row{grid-template-columns:1fr; gap:2px}
+    .who{padding-top:6px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Research Engine · User Journey</p>
+  <h1>From “I need to do research on X” to an insight a PM can act on Monday.</h1>
+  <p class="lede">One continuous path. At each step you see what you do, what Research Engine does,
+  and the checkpoint that keeps the work honest — a judge pass or a guardrail.</p>
+
+  <div class="legend" aria-hidden="true">
+    <span><i class="swatch sw-teal"></i> Workflow step</span>
+    <span><i class="swatch sw-amber"></i> Judge checkpoint</span>
+    <span><i class="swatch sw-coral"></i> Guardrail</span>
+  </div>
+
+  <div class="tl">
+
+    <div class="step step--start">
+      <div class="node" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-5-6-5"/><path d="M12 19h8"/></svg>
+      </div>
+      <div class="card">
+        <h3>You open Claude Code and just say it</h3>
+        <div class="row"><span class="who">You</span><p class="said you">“I need to do user research on checkout drop-off.”</p></div>
+        <div class="row"><span class="who">Engine</span><p class="said eng"><span class="skill">CLAUDE.md</span> router recognizes the intent and starts the orchestrator. No forms, no setup.</p></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="node" aria-hidden="true">1</div>
+      <div class="card">
+        <h3>Clarify the brief <span class="skill">/research</span></h3>
+        <div class="row"><span class="who">You</span><p class="said you">Answer 5–7 sharp questions about the decision, the users, and the timeline.</p></div>
+        <div class="row"><span class="who">Engine</span><p class="said eng">Pressure-tests the vague brief, then scaffolds <span class="skill">projects/checkout-dropoff/</span> from templates.</p></div>
+        <span class="chip chip--gov"><b>Guardrail</b> · approval gate checks the source before any material is ingested</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="node" aria-hidden="true">2</div>
+      <div class="card">
+        <h3>Plan the study <span class="skill">research-plan</span></h3>
+        <div class="row"><span class="who">You</span><p class="said you">Cut 10+ candidate questions down to the vital few tied to the decision.</p></div>
+        <div class="row"><span class="who">Engine</span><p class="said eng">Builds in layers: questions → method → screener → discussion guide, auditing for leading language.</p></div>
+        <span class="chip chip--judge"><b>Judge</b> · discussion-guide rubric — bias screen, methodological fit, decision linkage</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="node" aria-hidden="true">3</div>
+      <div class="card">
+        <h3>Run &amp; capture interviews <span class="skill">research-interview</span></h3>
+        <div class="row"><span class="who">You</span><p class="said you">Moderate the sessions — the rapport and probing are yours alone.</p></div>
+        <div class="row"><span class="who">Engine</span><p class="said eng">Audits the guide beforehand; afterward cleans transcripts (“don’t summarize, just clean”).</p></div>
+        <span class="chip chip--gov"><b>Guardrail</b> · PII → participants become P1..Pn; raw identities stay gitignored</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="node" aria-hidden="true">4</div>
+      <div class="card">
+        <h3>Synthesize into themes <span class="skill">research-synthesis</span></h3>
+        <div class="row"><span class="who">You</span><p class="said you">Own interpretation — decide what the patterns actually mean.</p></div>
+        <div class="row"><span class="who">Engine</span><p class="said eng">Codes one transcript at a time, clusters into 6–10 themes with counts, quotes, and confidence.</p></div>
+        <span class="chip chip--judge"><b>Judge</b> · synthesis rubric — quote fidelity, participant breadth, no false consensus</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="node" aria-hidden="true">5</div>
+      <div class="card">
+        <h3>Communicate insights <span class="skill">research-insights</span></h3>
+        <div class="row"><span class="who">You</span><p class="said you">Approve the headline and the two next steps you’ll actually pursue.</p></div>
+        <div class="row"><span class="who">Engine</span><p class="said eng">Writes 6-part insights, runs a skeptic’s pass, and format-shifts for Slack, repo, and leadership.</p></div>
+        <span class="chip chip--judge"><b>Judge</b> · insights rubric — headline honesty, evidence proportionality, actionability</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="node" aria-hidden="true">6</div>
+      <div class="card">
+        <h3>Share it — on your terms</h3>
+        <div class="row"><span class="who">You</span><p class="said you">Confirm before anything leaves your machine.</p></div>
+        <div class="row"><span class="who">Engine</span><p class="said eng">Hands you ready-to-paste outputs at three depths; never emails, uploads, or posts on its own.</p></div>
+        <span class="chip chip--gov"><b>Guardrail</b> · no external sending without explicit confirmation</span>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="principle"><b>Total research time drops; cognitive load shifts to judgment</b> — the work
+  that always mattered most.</p>
+  <p class="foot">research-engine · MIT · a Claude Code–native framework</p>
+</div>
+</body>
+</html>

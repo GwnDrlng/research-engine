@@ -1,0 +1,15 @@
+# Real study data — participant PII, transcripts, recordings — NEVER commit.
+projects/*
+!projects/.gitkeep
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
