@@ -6,7 +6,12 @@ research on checkout drop-off."* Research Engine walks you through the workflow.
 interview prep, synthesis, and stakeholder-ready insights. A separate LLM-as-judge checks every
 artifact before it counts. Guardrails keep participant data and company policy safe.
 
-Built on the "AI for UX" workflow described by LadyCarni and Design Bootcamp. Its guiding rule:
+Built on the "AI for UX" workflow described by LadyCarni and Design Bootcamp
+([the guide](https://medium.com/design-bootcamp/ai-for-ux-the-guide-you-wish-someone-had-given-you-sooner-d1401c9f2e0b),
+[prompts and configuration](https://medium.com/@LadyCarni/prompts-preferences-and-configuration-007cd743a89a),
+[research and discovery](https://medium.com/@LadyCarni/ai-for-ux-ai-across-the-ux-workflow-research-and-discovery-499845f73a63),
+[writing, prototyping, and handoff](https://medium.com/design-bootcamp/ai-for-ux-ai-across-the-ux-workflow-writing-prototyping-and-handoff-4076a991abe0)).
+Its guiding rule:
 
 > **The value isn't in generating faster. It's in evaluating better.**
 > AI drafts and organizes. **Human judgment is the product.**
