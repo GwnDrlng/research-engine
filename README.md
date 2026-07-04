@@ -18,10 +18,12 @@ Its guiding rule:
 
 ## Visual overview
 
-- 🗺️ **System architecture**, how the pieces fit together
-  · [local](docs/architecture.html) · [shareable](https://claude.ai/code/artifact/08308535-f307-4945-b96e-f97ef68d42e6)
-- 🚶 **User journey**, the end-to-end experience step by step
-  · [local](docs/user-journey.html) · [shareable](https://claude.ai/code/artifact/7cca1fe2-98fb-4377-af5f-d5014629d9b1)
+Rendered pages open in a new browser tab.
+
+- 🗺️ <a href="https://gwndrlng.github.io/research-engine/docs/architecture.html" target="_blank" rel="noopener"><strong>System architecture</strong></a>, how the pieces fit together
+  · <a href="docs/architecture.html">source</a>
+- 🚶 <a href="https://gwndrlng.github.io/research-engine/docs/user-journey.html" target="_blank" rel="noopener"><strong>User journey</strong></a>, the end-to-end experience step by step
+  · <a href="docs/user-journey.html">source</a>
 
 ## Quickstart
 
