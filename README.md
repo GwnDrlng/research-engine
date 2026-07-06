@@ -32,7 +32,7 @@ each view opens in its own browser tab.
 
 1. **Clone the repo** and open it in Claude Code:
    ```bash
-   git clone https://github.com/gwndrlng/research-engine.git && cd research-engine
+   git clone https://github.com/GwnDrlng/research-engine.git && cd research-engine
    claude
    ```
 2. **Say what you need.** For example, *"I need to do user research on onboarding drop-off."*
