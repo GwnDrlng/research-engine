@@ -56,8 +56,13 @@
   }
   h1{
     font-family:var(--serif); font-weight:600; letter-spacing:-.01em;
-    font-size:clamp(30px,5.4vw,50px); line-height:1.05; margin:0 0 16px;
+    font-size:clamp(30px,5.4vw,50px); line-height:1.05; margin:0 0 10px;
     text-wrap:balance;
+  }
+  .tagline{
+    font-family:var(--serif); font-weight:400; font-style:italic;
+    font-size:clamp(18px,2.6vw,23px); line-height:1.25; color:var(--teal-deep);
+    max-width:44ch; margin:0 0 18px; text-wrap:balance;
   }
   .lede{
     font-size:clamp(16px,2.2vw,19px); color:var(--muted);
@@ -155,10 +160,13 @@
 <body>
 <div class="wrap">
   <p class="eyebrow">Research Engine · System Architecture</p>
-  <h1>A governed pipeline from a plain-language ask to a defensible insight.</h1>
-  <p class="lede">You open Claude Code at the repo root and say what you need. A persistent
-  configuration layer routes you through the workflow, an independent judge scores every artifact,
-  and guardrails keep participant data and company policy safe the whole way.</p>
+  <h1>The governed research pipeline</h1>
+  <p class="tagline">From a plain-language ask to a defensible insight.</p>
+  <p class="lede">Built for UX and product researchers who run the same arc on every study, then lose
+  hours to the setup around each step. Plan, interview, synthesize, report; Research Engine does the
+  mechanical heavy lifting at every stage. What it never does is decide. You stay the one who judges
+  what a finding means, and the framework is reusable, so every study starts from the same rigor
+  instead of a blank page.</p>
 
   <div class="term" role="img" aria-label="Terminal showing a user typing a research request">
     <div class="term__bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>

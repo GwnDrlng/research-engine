@@ -50,7 +50,10 @@
   .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
     color:var(--teal-deep); margin:0 0 14px}
   h1{font-family:var(--serif); font-weight:600; letter-spacing:-.01em;
-    font-size:clamp(30px,5.4vw,50px); line-height:1.05; margin:0 0 16px; text-wrap:balance}
+    font-size:clamp(30px,5.4vw,50px); line-height:1.05; margin:0 0 10px; text-wrap:balance}
+  .tagline{font-family:var(--serif); font-weight:400; font-style:italic;
+    font-size:clamp(18px,2.6vw,23px); line-height:1.25; color:var(--teal-deep);
+    max-width:44ch; margin:0 0 18px; text-wrap:balance}
   .lede{font-size:clamp(16px,2.2vw,19px); color:var(--muted); max-width:60ch; margin:0 0 10px}
 
   .legend{display:flex; gap:18px; flex-wrap:wrap; margin:22px 0 8px;
@@ -106,9 +109,11 @@
 <body>
 <div class="wrap">
   <p class="eyebrow">Research Engine · User Journey</p>
-  <h1>From “I need to do research on X” to an insight a PM can act on Monday.</h1>
-  <p class="lede">One continuous path. At each step you see what you do, what Research Engine does,
-  and the checkpoint that keeps the work honest, either a judge pass or a guardrail.</p>
+  <h1>One continuous research path</h1>
+  <p class="tagline">From “I need to do research on X” to a defensible insight, on one reusable path you
+  follow and pressure-test on every study.</p>
+  <p class="lede">At each step you see what you do, what Research Engine does, and the checkpoint that
+  keeps the work honest, either a judge pass or a guardrail.</p>
 
   <div class="legend" aria-hidden="true">
     <span><i class="swatch sw-teal"></i> Workflow step</span>
@@ -191,8 +196,8 @@
 
   </div>
 
-  <p class="principle"><b>Total research time drops. Cognitive load shifts to judgment,</b> the work
-  that always mattered most.</p>
+  <p class="principle"><b>Total research time drops. What's left is judgment,</b> the part of the job
+  that was always the point.</p>
   <p class="foot">research-engine · MIT · a Claude Code-native framework</p>
 </div>
 </body>
