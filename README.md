@@ -1,10 +1,12 @@
 # Research Engine
 
 **A Claude Code-native framework that makes UX and Product research repeatable, efficient, and
-governed.** Open Claude Code at this repo's root and say what you need, like *"I need to do user
-research on checkout drop-off."* Research Engine walks you through the workflow. It covers planning,
-interview prep, synthesis, and stakeholder-ready insights. A separate LLM-as-judge checks every
-artifact before it counts. Guardrails keep participant data and company policy safe.
+governed.** You run the same arc on every study: plan, interview, synthesize, report. Research
+Engine takes the setup and the mechanical heavy lifting so your time goes to the part that was
+always judgment. Open Claude Code at this repo's root and say what you need, like *"I need to do
+user research on checkout drop-off,"* and it walks you through the workflow. What it never does is
+decide. A separate LLM-as-judge scores every artifact before it counts, and guardrails keep
+participant data and company policy where they belong.
 
 Built on the "AI for UX" workflow described by LadyCarni and Design Bootcamp
 ([the guide](https://medium.com/design-bootcamp/ai-for-ux-the-guide-you-wish-someone-had-given-you-sooner-d1401c9f2e0b),
@@ -28,9 +30,9 @@ each view opens in its own browser tab.
 
 ## Quickstart
 
-1. **Get the repo** and open it in Claude Code:
+1. **Clone the repo** and open it in Claude Code:
    ```bash
-   git clone <your-fork-url> research-engine && cd research-engine
+   git clone https://github.com/gwndrlng/research-engine.git && cd research-engine
    claude
    ```
 2. **Say what you need.** For example, *"I need to do user research on onboarding drop-off."*
