@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Items — Research Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060311;
+    --fg:#EEECE8;
+    --blue:#1D4ED8;
+    --violet:#6D4FD6;
+    --coral:#E2725B;
+    --amber:#D6A756;
+    --card:rgba(255,255,255,0.05);
+    --line:rgba(238,236,232,0.15);
+    --surface:#1F2937;
+    --mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:var(--sans);font-weight:400;
+    font-size:16px;line-height:1.6;
+    padding:48px 24px 120px;
+  }
+  .wrap{max-width:920px;margin:0 auto}
+
+  .eyebrow{
+    font-family:var(--mono);text-transform:uppercase;letter-spacing:.16em;
+    font-weight:500;font-size:12px;opacity:.6;margin:0 0 14px;
+  }
+  h1{font-size:36px;font-weight:500;line-height:1.2;margin:0 0 14px;letter-spacing:-.01em}
+  .lede{opacity:.6;max-width:60ch;margin:0 0 32px}
+
+  /* ---- toolbar ---- */
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;margin-bottom:14px;
+    position:sticky;top:0;z-index:10;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  }
+  .counts{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.14em;display:flex;gap:16px;flex-wrap:wrap}
+  .counts b{font-weight:500}
+  .counts .n-open{color:var(--amber)}
+  .counts .n-done{color:var(--blue)}
+  .counts .n-na{opacity:.45}
+  .spacer{flex:1 1 40px}
+  button{
+    font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:11px;font-weight:500;
+    color:var(--fg);background:transparent;border:1px solid var(--line);
+    border-radius:9999px;padding:7px 15px;cursor:pointer;transition:border-color .15s,background .15s;
+  }
+  button:hover{border-color:rgba(238,236,232,.55)}
+  button.primary{background:var(--blue);border-color:var(--blue)}
+  button.primary:hover{background:#1a45bd;border-color:#1a45bd}
+  button.on{border-color:var(--fg)}
+
+  .bar{height:3px;border-radius:9999px;background:rgba(238,236,232,.12);overflow:hidden;margin-bottom:36px}
+  .bar i{display:block;height:100%;background:var(--blue);width:0;transition:width .25s}
+
+  /* ---- groups ---- */
+  section{margin-bottom:44px}
+  .ghead{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;border-bottom:1px solid var(--line);padding-bottom:10px}
+  .gid{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.45}
+  .ghead h2{font-size:20px;font-weight:500;margin:0}
+  .gnote{opacity:.6;font-size:14px;margin:10px 0 20px;max-width:70ch}
+
+  /* ---- item ---- */
+  .item{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;margin-bottom:12px;transition:opacity .18s,border-color .18s;
+  }
+  .item[data-state="done"]{border-color:rgba(29,78,216,.6)}
+  .item[data-state="done"] .title{text-decoration:line-through;text-decoration-color:rgba(238,236,232,.35)}
+  .item[data-state="na"]{opacity:.42}
+  .item[data-state="na"] .title{text-decoration:line-through;text-decoration-color:rgba(238,236,232,.35)}
+  .item.hide{display:none}
+
+  .row{display:flex;gap:14px;align-items:flex-start}
+  .idtag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;font-weight:500;
+    border:1px solid var(--line);border-radius:9999px;padding:3px 9px;
+    flex:0 0 auto;margin-top:2px;opacity:.75;
+  }
+  .body{flex:1 1 auto;min-width:0}
+  .title{font-weight:500;font-size:16px;margin:0 0 6px}
+  .why{opacity:.6;font-size:14px;margin:0}
+  .why code,.title code{font-family:var(--mono);font-size:.88em;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px}
+
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .tag{
+    font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;font-weight:500;
+    border-radius:9999px;padding:3px 10px;border:1px solid currentColor;
+  }
+  .t-fm{color:var(--coral)}
+  .t-file{color:rgba(238,236,232,.5)}
+  .t-decide{color:var(--amber)}
+  .t-verify{color:var(--violet)}
+
+  .actions{display:flex;gap:6px;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end}
+  .actions button{padding:6px 12px}
+  .item[data-state="done"] .b-done{background:var(--blue);border-color:var(--blue)}
+  .item[data-state="na"] .b-na{border-color:var(--fg);opacity:1}
+
+  .noteswrap{margin-top:12px}
+  .noteswrap.collapsed{display:none}
+  textarea{
+    width:100%;min-height:64px;resize:vertical;
+    background:rgba(0,0,0,.28);color:var(--fg);
+    border:1px solid var(--line);border-radius:8px;
+    font-family:var(--sans);font-size:14px;line-height:1.55;padding:10px 12px;
+  }
+  textarea::placeholder{color:rgba(238,236,232,.35)}
+  textarea:focus{outline:none;border-color:rgba(238,236,232,.5)}
+  .hasnote .b-note{border-color:var(--amber);color:var(--amber)}
+
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);opacity:.5;font-size:13px}
+  footer code{font-family:var(--mono)}
+
+  @media (max-width:680px){
+    body{padding:32px 16px 90px}
+    h1{font-size:28px}
+    .row{flex-direction:column}
+    .actions{justify-content:flex-start}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Research Engine · working checklist</p>
+  <h1>Open items</h1>
+  <p class="lede">Everything left hanging from the synthesis-hardening pass, derived from
+  <code>evals/observed-failure-modes.md</code>, <code>evals/run-log.md</code> and the current tree.
+  Mark each <b>done</b>, <b>not required</b>, or leave it open with notes. State is saved in this
+  browser; hit <b>Copy for Claude</b> at the end of the day and paste it back into the session.</p>
+
+  <div class="toolbar">
+    <div class="counts">
+      <span class="n-open"><b id="c-open">0</b> open</span>
+      <span class="n-done"><b id="c-done">0</b> done</span>
+      <span class="n-na"><b id="c-na">0</b> n/a</span>
+    </div>
+    <span class="spacer"></span>
+    <button id="f-toggle">Hide resolved</button>
+    <button id="reset">Reset</button>
+    <button id="copy" class="primary">Copy for Claude</button>
+  </div>
+  <div class="bar"><i id="bar"></i></div>
+
+  <!-- ================= A ================= -->
+  <section data-group="Governance &amp; rubric changes not yet applied">
+    <div class="ghead"><span class="gid">A</span><h2>Proposed changes never applied</h2></div>
+    <p class="gnote">The 2026-08-12 pass applied most of the synthesis proposals. These are the ones the
+    status section explicitly lists as <b>NOT YET APPLIED</b>. A1–A3 are the whole PII block — none of it
+    landed.</p>
+
+    <div class="item" data-id="A1">
+      <div class="row">
+        <span class="idtag">A1</span>
+        <div class="body">
+          <p class="title">Add the phonetic-variant redaction pass to <code>governance/pii-handling.md</code></p>
+          <p class="why">Exact-name replacement misses auto-transcription's phonetic variants. The procedure that
+          converged: build the variant list <i>before</i> pass 1, replace known names, scan rare capitalized
+          bigrams, scan low-frequency capitalized single tokens, re-scan after reading each transcript.
+          Took 7 successive passes without it.</p>
+          <div class="tags"><span class="tag t-fm">FM-11 · 7×</span><span class="tag t-file">governance/pii-handling.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="A2">
+      <div class="row">
+        <span class="idtag">A2</span>
+        <div class="body">
+          <p class="title">Add the over-redaction review step to <code>governance/pii-handling.md</code></p>
+          <p class="why">After redaction, review replacements for non-person tokens — technical terms, product
+          names, place names. A term of art matching a person-name pattern got redacted and corrupted the
+          analysis.</p>
+          <div class="tags"><span class="tag t-fm">FM-10</span><span class="tag t-file">governance/pii-handling.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="A3">
+      <div class="row">
+        <span class="idtag">A3</span>
+        <div class="body">
+          <p class="title">Restate the PII guarantee at the boundary it can actually hold</p>
+          <p class="why">Full redaction of free-text colleague mentions is not reliably achievable, so the doc
+          shouldn't promise it. The enforceable guarantee is that only <code>Pnn</code>/<code>[Cnn]</code> codes
+          reach a deliverable. Worth deciding whether this weakens a claim someone is relying on.</p>
+          <div class="tags"><span class="tag t-decide">decision</span><span class="tag t-file">governance/pii-handling.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="A4">
+      <div class="row">
+        <span class="idtag">A4</span>
+        <div class="body">
+          <p class="title">Decide: evidence-type labelling as its own rubric criterion, or leave it folded in</p>
+          <p class="why">Proposed as a separate criterion. It landed <i>inside</i> criterion 2 and inside Step 3 of
+          the skill instead. Folded-in means it shares criterion 2's verdict and can be masked by it; separate
+          means the judge must score it explicitly. This is a judgment call, not an oversight to fix.</p>
+          <div class="tags"><span class="tag t-fm">FM-5</span><span class="tag t-decide">decision</span><span class="tag t-file">rubrics/synthesis.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="A5">
+      <div class="row">
+        <span class="idtag">A5</span>
+        <div class="body">
+          <p class="title">Add a source-layer &amp; speaker-discipline criterion to <code>rubrics/synthesis.md</code></p>
+          <p class="why">Verify quotes come from the verbatim layer, and that no moderator speech is attributed to
+          a participant. Currently only implicit in criterion 5 (quote fidelity). Unlike A4 this one did <i>not</i>
+          land anywhere in the rubric — it is a genuine gap.</p>
+          <div class="tags"><span class="tag t-fm">FM-12 / FM-14</span><span class="tag t-file">rubrics/synthesis.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="A6">
+      <div class="row">
+        <span class="idtag">A6</span>
+        <div class="body">
+          <p class="title">Add Step 1a — source-layer discipline — to the synthesis skill</p>
+          <p class="why">Where transcripts come from AI note-takers, identify the verbatim layer and code only from
+          it. Machine-generated summaries, "action items" and "next steps" are the tool's inferences, not
+          participant speech. Verified absent: the skill still runs Step 1 → Step 5 with no 1a.</p>
+          <div class="tags"><span class="tag t-fm">FM-14</span><span class="tag t-file">.claude/skills/research-synthesis/SKILL.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="A7">
+      <div class="row">
+        <span class="idtag">A7</span>
+        <div class="body">
+          <p class="title">Add Step 2a — speaker discipline — to the synthesis skill</p>
+          <p class="why">Exclude moderator turns, including the moderator recounting other sessions and proposing
+          solutions. Where a participant merely assents to a moderator-introduced idea, record it as assent, not
+          demand. FM-13 (study-sequence contamination) has no other mitigation anywhere in the repo.</p>
+          <div class="tags"><span class="tag t-fm">FM-12 / FM-13</span><span class="tag t-file">.claude/skills/research-synthesis/SKILL.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= B ================= -->
+  <section data-group="Eval fixtures">
+    <div class="ghead"><span class="gid">B</span><h2>Missing eval fixtures</h2></div>
+    <p class="gnote">Nine fixtures were proposed. <code>synthesis-arithmetic</code> consolidated five of them
+    (FM-1, 2, 4, 6, 7 plus the FM-8 disclaimer). These are what's actually left on disk — the tree currently
+    holds only <code>guide-clean</code>, <code>guide-leading</code>, <code>synthesis-arithmetic</code>,
+    <code>synthesis-overclaimed</code>, <code>synthesis-sound</code>.</p>
+
+    <div class="item" data-id="B1">
+      <div class="row">
+        <span class="idtag">B1</span>
+        <div class="body">
+          <p class="title">Build <code>synthesis-adjacent-evidence</code> — expected FAIL</p>
+          <p class="why">Quote is topically near the theme but supports a different claim. <b>This is the highest-value
+          missing fixture:</b> FM-3 was the second most frequent live failure (5 occurrences, caught in all three
+          judge passes) and nothing in the suite currently tests for it.</p>
+          <div class="tags"><span class="tag t-fm">FM-3 · 5×</span><span class="tag t-file">evals/fixtures/</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="B2">
+      <div class="row">
+        <span class="idtag">B2</span>
+        <div class="body">
+          <p class="title">Build <code>synthesis-moderator-quote</code> — expected FAIL</p>
+          <p class="why">A moderator line attributed to a participant. Pairs with A5/A7 — there's little point
+          shipping the fixture before the rubric has a criterion that can catch it.</p>
+          <div class="tags"><span class="tag t-fm">FM-12</span><span class="tag t-file">evals/fixtures/</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="B3">
+      <div class="row">
+        <span class="idtag">B3</span>
+        <div class="body">
+          <p class="title">Build <code>synthesis-summary-layer</code> — expected FAIL</p>
+          <p class="why">Quote drawn from an AI-generated summary layer rather than the verbatim layer. Same
+          dependency on A5/A6 as B2.</p>
+          <div class="tags"><span class="tag t-fm">FM-14</span><span class="tag t-file">evals/fixtures/</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="B4">
+      <div class="row">
+        <span class="idtag">B4</span>
+        <div class="body">
+          <p class="title">Build <code>synthesis-honest-counts</code> — expected PASS control</p>
+          <p class="why">Compound theme correctly split, every participant cited, evidence types labelled. Without a
+          clean control on the new criterion-2 checklist, a judge that fails everything looks identical to a judge
+          that works. <code>synthesis-sound</code> was updated for the displayed-evidence rule but doesn't exercise
+          compound-splitting or evidence types.</p>
+          <div class="tags"><span class="tag t-file">evals/fixtures/</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="B5">
+      <div class="row">
+        <span class="idtag">B5</span>
+        <div class="body">
+          <p class="title">Decide whether FM-5 needs a fixture of its own</p>
+          <p class="why">Uniform evidentiary framing over non-uniform evidence — "observed live, not merely
+          reported" asserted across a set where only part was observed. It appears in the proposed rubric criterion
+          but was never given a fixture in the proposed table. Gap, or deliberate?</p>
+          <div class="tags"><span class="tag t-fm">FM-5</span><span class="tag t-decide">decision</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="B6">
+      <div class="row">
+        <span class="idtag">B6</span>
+        <div class="body">
+          <p class="title">Fix the stale count in <code>observed-failure-modes.md</code></p>
+          <p class="why">The status section says "the remaining 7 proposed fixtures." Counting against the tree,
+          four remain uncreated (B1–B4). Either the number is stale or my mapping of what
+          <code>synthesis-arithmetic</code> covers is wrong — worth reconciling so the doc stays trustworthy.</p>
+          <div class="tags"><span class="tag t-verify">verify</span><span class="tag t-file">evals/observed-failure-modes.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= C ================= -->
+  <section data-group="Harness &amp; judge validation">
+    <div class="ghead"><span class="gid">C</span><h2>Unproven harness behaviour</h2></div>
+    <p class="gnote">The retry policy, the run log and the strengthened comparator were all written on
+    2026-08-12 and <b>none of them has been exercised end to end</b>. The only run in the log predates the
+    code and was backfilled by hand.</p>
+
+    <div class="item" data-id="C1">
+      <div class="row">
+        <span class="idtag">C1</span>
+        <div class="body">
+          <p class="title">Run <code>evals/run-evals.sh</code> end to end under the new retry + logging code</p>
+          <p class="why">First real exercise of <code>MAX_RETRIES=2</code>, the append-to-<code>run-log.md</code>
+          path, and the escalation banner. Everything downstream in this section depends on this run happening.</p>
+          <div class="tags"><span class="tag t-verify">verify</span><span class="tag t-file">evals/run-evals.sh</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="C2">
+      <div class="row">
+        <span class="idtag">C2</span>
+        <div class="body">
+          <p class="title">Prove judge-depth stability under the <code>verdict|score|untraced</code> comparator</p>
+          <p class="why"><b>The most load-bearing unknown here.</b> The old verdict-only comparator couldn't detect
+          the observed pathology — across three live passes the verdict stayed NEEDS-WORK while the score moved
+          2/5 → 4/5 → 3/5. If depth still varies between invocations, scores aren't comparable and the gate can
+          terminate on a lucky shallow pass. Stability is currently <i>unproven</i>, not established.</p>
+          <div class="tags"><span class="tag t-verify">verify</span><span class="tag t-file">evals/run-evals.sh</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="C3">
+      <div class="row">
+        <span class="idtag">C3</span>
+        <div class="body">
+          <p class="title">Close the <code>guide-clean</code> escalation with a captured criterion-FAIL count</p>
+          <p class="why">The 2026-08-12 run recorded NEEDS-WORK with the FAIL count "not captured" — which is exactly
+          what made it unresolvable, and exactly what the new harness fixes. The manual investigation returned PASS
+          4/5 with 0 FAILs, so it should now be accepted as warn-level. Confirm that under C1 and close it out.</p>
+          <div class="tags"><span class="tag t-verify">verify</span><span class="tag t-file">evals/run-log.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="C4">
+      <div class="row">
+        <span class="idtag">C4</span>
+        <div class="body">
+          <p class="title">Apply or reject the <code>guide-clean</code> line 12 rewording</p>
+          <p class="why">Line 12 — <i>"Tell me about a time a checkout didn't go the way you expected."</i> —
+          presupposes a negative incident with no escape hatch, and is inconsistent with line 10 in the same fixture,
+          which does hedge. Suggested fix, not applied: <i>"Was there ever a time a checkout didn't go the way you
+          expected? If so, walk me through it."</i> Note that changing a fixture changes what the suite measures.</p>
+          <div class="tags"><span class="tag t-decide">decision</span><span class="tag t-file">evals/fixtures/guide-clean.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="C5">
+      <div class="row">
+        <span class="idtag">C5</span>
+        <div class="body">
+          <p class="title">Watch for the judge confabulating rubric provisions again</p>
+          <p class="why">In the investigation the judge cited a PASS threshold that no rubric contained. The
+          mitigation — an explicit "What counts as acceptable" section in all four rubrics — is applied but
+          unverified. Next run, check whether the judge's justifications now cite text that actually exists.</p>
+          <div class="tags"><span class="tag t-verify">verify</span><span class="tag t-file">rubrics/</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= D ================= -->
+  <section data-group="Docs &amp; wiring">
+    <div class="ghead"><span class="gid">D</span><h2>Docs &amp; wiring</h2></div>
+    <p class="gnote">Loose ends outside the synthesis work itself.</p>
+
+    <div class="item" data-id="D1">
+      <div class="row">
+        <span class="idtag">D1</span>
+        <div class="body">
+          <p class="title">Wire <code>docs/design-baseline.md</code> into <code>CLAUDE.md</code></p>
+          <p class="why">It opens with "<i>standing rule: every HTML artifact produced in this repo uses this
+          palette and type system</i>" — but nothing in the repo references it. Grep across all
+          <code>.md</code>/<code>.sh</code> returns zero hits outside the file itself, so a fresh session won't
+          find it unless it happens to read <code>docs/</code>.</p>
+          <div class="tags"><span class="tag t-file">CLAUDE.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="D2">
+      <div class="row">
+        <span class="idtag">D2</span>
+        <div class="body">
+          <p class="title">Retouch or retire <code>docs/user-journey.html</code> and <code>docs/architecture.html</code></p>
+          <p class="why">The baseline explicitly supersedes the earlier editorial-serif + teal/amber/coral look
+          used in <code>user-journey.html</code>. Decide whether existing artifacts get re-touched or whether the
+          rule only binds new ones. <code>architecture.html</code> hasn't been checked against the baseline at all.</p>
+          <div class="tags"><span class="tag t-decide">decision</span><span class="tag t-file">docs/</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+
+    <div class="item" data-id="D3">
+      <div class="row">
+        <span class="idtag">D3</span>
+        <div class="body">
+          <p class="title">Update the status section of <code>observed-failure-modes.md</code> as items land</p>
+          <p class="why">The APPLIED / NOT YET APPLIED split is the only index of what's real. If A1–A7 get done
+          without updating it, the doc starts lying — and it's the artifact a future session will trust first.</p>
+          <div class="tags"><span class="tag t-file">evals/observed-failure-modes.md</span></div>
+        </div>
+        <div class="actions"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Saved locally in this browser via <code>localStorage</code> — no network, nothing leaves this machine.
+    File lives at <code>docs/open-items.html</code>.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "spark-open-items-v1";
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) { state = {}; }
+
+  var items = Array.prototype.slice.call(document.querySelectorAll(".item"));
+  var hideResolved = false;
+
+  function get(id){
+    if(!state[id]) state[id] = {status:"open", note:""};
+    return state[id];
+  }
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
+  }
+
+  // Build controls for each item
+  items.forEach(function(el){
+    var id = el.dataset.id;
+    var s = get(id);
+    var actions = el.querySelector(".actions");
+
+    var bDone = mkBtn("Done", "b-done");
+    var bNa   = mkBtn("N/A", "b-na");
+    var bNote = mkBtn("Notes", "b-note");
+    actions.appendChild(bDone);
+    actions.appendChild(bNa);
+    actions.appendChild(bNote);
+
+    var wrap = document.createElement("div");
+    wrap.className = "noteswrap collapsed";
+    var ta = document.createElement("textarea");
+    ta.placeholder = "Notes, blockers, what you decided…";
+    ta.value = s.note || "";
+    wrap.appendChild(ta);
+    el.appendChild(wrap);
+
+    bDone.addEventListener("click", function(){
+      s.status = (s.status === "done") ? "open" : "done";
+      save(); render();
+    });
+    bNa.addEventListener("click", function(){
+      s.status = (s.status === "na") ? "open" : "na";
+      save(); render();
+    });
+    bNote.addEventListener("click", function(){
+      wrap.classList.toggle("collapsed");
+      if(!wrap.classList.contains("collapsed")) ta.focus();
+    });
+    ta.addEventListener("input", function(){
+      s.note = ta.value;
+      save(); paintOne(el);
+    });
+
+    el._ta = ta; el._wrap = wrap;
+  });
+
+  function mkBtn(label, cls){
+    var b = document.createElement("button");
+    b.textContent = label; b.className = cls;
+    return b;
+  }
+
+  function paintOne(el){
+    var s = get(el.dataset.id);
+    el.dataset.state = s.status;
+    el.classList.toggle("hasnote", !!(s.note && s.note.trim()));
+    var resolved = (s.status === "done" || s.status === "na");
+    el.classList.toggle("hide", hideResolved && resolved);
+    // keep a non-empty note visible so it isn't silently lost
+    if(s.note && s.note.trim()) el._wrap.classList.remove("collapsed");
+  }
+
+  function render(){
+    var o=0,d=0,n=0;
+    items.forEach(function(el){
+      paintOne(el);
+      var st = get(el.dataset.id).status;
+      if(st === "done") d++; else if(st === "na") n++; else o++;
+    });
+    document.getElementById("c-open").textContent = o;
+    document.getElementById("c-done").textContent = d;
+    document.getElementById("c-na").textContent   = n;
+    var total = items.length;
+    document.getElementById("bar").style.width = total ? (((d+n)/total)*100).toFixed(1)+"%" : "0";
+  }
+
+  document.getElementById("f-toggle").addEventListener("click", function(){
+    hideResolved = !hideResolved;
+    this.textContent = hideResolved ? "Show all" : "Hide resolved";
+    this.classList.toggle("on", hideResolved);
+    render();
+  });
+
+  document.getElementById("reset").addEventListener("click", function(){
+    if(!window.confirm("Clear all statuses and notes?")) return;
+    state = {};
+    items.forEach(function(el){ el._ta.value = ""; el._wrap.classList.add("collapsed"); });
+    save(); render();
+  });
+
+  document.getElementById("copy").addEventListener("click", function(){
+    var btn = this;
+    var out = ["# Open items — end-of-day status", ""];
+    var stamp = new Date().toISOString().slice(0,10);
+    out.push("Updated " + stamp + ". Statuses and notes set by Gwenyvere in `docs/open-items.html`.", "");
+
+    document.querySelectorAll("section").forEach(function(sec){
+      var rows = [];
+      sec.querySelectorAll(".item").forEach(function(el){
+        var s = get(el.dataset.id);
+        var mark = s.status === "done" ? "[x]" : (s.status === "na" ? "[~]" : "[ ]");
+        var title = el.querySelector(".title").textContent.replace(/\s+/g," ").trim();
+        var line = "- " + mark + " **" + el.dataset.id + "** " + title;
+        if(s.status === "na") line += "  _(not required)_";
+        if(s.note && s.note.trim()) line += "\n      - note: " + s.note.trim().replace(/\n+/g, " / ");
+        rows.push(line);
+      });
+      out.push("## " + sec.dataset.group, "");
+      out.push(rows.join("\n"), "");
+    });
+
+    out.push("Legend: `[x]` done · `[~]` not required · `[ ]` still open.");
+    var text = out.join("\n");
+
+    function done(ok){
+      btn.textContent = ok ? "Copied ✓" : "Copy failed";
+      setTimeout(function(){ btn.textContent = "Copy for Claude"; }, 1800);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ fallback(text, done); });
+    } else {
+      fallback(text, done);
+    }
+  });
+
+  function fallback(text, cb){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e) { ok = false; }
+    document.body.removeChild(ta);
+    cb(ok);
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -20,6 +20,20 @@ on it Monday morning without being misled?
 5. **Quote representativeness** — Supporting quotes are typical of the theme, not cherry-picked
    dramatic outliers. Every quote is verbatim and attributed. `FAIL` on unsourced quotes.
 
+## What counts as acceptable
+
+Consumers of this rubric (`evals/run-evals.sh` and the phase skills) treat **`PASS`, or `NEEDS-WORK`
+carrying only `WARN` criteria and no `FAIL` criteria**, as acceptable. Anything with a criterion at
+`FAIL` is not.
+
+Be deliberate about `WARN` versus `FAIL` — that boundary is where the gate opens or closes. `WARN` is for
+something a reader should know that does not make the artifact misleading. `FAIL` is for where a reader
+acting on the artifact would be misled.
+
+**Do not infer a threshold that is not written here.** If this section does not cover your case, say so
+rather than supplying a rule — a judge has previously cited a non-existent acceptance provision as though
+a rubric file contained it.
+
 ## Anti-fabrication checks (hard fails)
 - No recommendation unsupported by a finding in the synthesis.
 - No quote without a `P#` source.

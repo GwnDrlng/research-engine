@@ -55,6 +55,20 @@ ask for it rather than inventing it.
    a hypothesis-generation exercise, never as a finding.
 4. **No quote without a verbatim source.** Every quote must trace to a real line in a transcript.
    If you can't source it, don't quote it.
+4a. **Assume every quote may be split by a timestamp, and check.** Transcripts routinely break a
+   single spoken sentence across a bare timestamp marker, often with a moderator interjection in
+   between. Locate the quote in the **verbatim layer** and find its nearest preceding marker — never
+   trust a coding file's rendering. **If the quote runs over a boundary, cite both timestamps** and
+   split the fragments visibly (`→`, or two separately cited quotes). Mark an elided interjection
+   with an ellipsis even when both halves sit in the same block. Transcripts without timestamps are
+   cited by line number (`L38`). Verify by script, not by eye — this defect class survived nine judge
+   passes.
+4b. **Light cleaning of quotes is expected; removing hedges is not.** Speakers repeat themselves and
+   the tooling tidies that up, so a coded quote is often not an exact substring of its transcript
+   line. That is by design — do not report exact-match failures as fidelity defects, and do not
+   restore quotes to their disfluent form. What matters is whether cleaning dropped a **hedge,
+   qualifier, or negation**, which changes evidentiary weight rather than readability. This study has
+   already removed a participant who was counted off the hedge "I guess."
 5. **Participant-count honesty.** A theme supported by fewer than 3 participants is a *hypothesis*,
    not a finding. Say so.
 6. **Keep observations separate from interpretations.** Label which is which.
