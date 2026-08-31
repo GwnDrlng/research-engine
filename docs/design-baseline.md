@@ -53,7 +53,7 @@ screenshots on this page — legitimate to draw from rather than inventing new h
 
 - Don't invent a rainbow of status colors — stay inside the four accents above (blue, violet,
   coral, amber) plus off-white/opacity for everything else.
-- Don't use a serif typeface anywhere; earlier artifacts in this repo (e.g. `docs/user-journey.html`)
+- Don't use a serif typeface anywhere; earlier artifacts in this repo (e.g. `docs/architecture.html`)
   used an editorial serif + teal/amber/coral triad — that look is superseded by this baseline for
   any new or re-touched artifact.
 - Don't fill badges/tags with a tinted background wash — Fluxon's own tags are outline-only.

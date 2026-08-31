@@ -25,8 +25,8 @@ each view opens in its own browser tab.
 
 - 🗺️ [System architecture](https://gwndrlng.github.io/research-engine/docs/architecture.html), how the pieces fit together
   · [source](docs/architecture.html)
-- 🚶 [User journey](https://gwndrlng.github.io/research-engine/docs/user-journey.html), the end-to-end experience step by step
-  · [source](docs/user-journey.html)
+- 🧭 [Journey layers demo](https://gwndrlng.github.io/research-engine/docs/journey-layers-example.html), a filled-in synthetic example of the layered journey visual
+  · [source](docs/journey-layers-example.html)
 
 ## Quickstart
 

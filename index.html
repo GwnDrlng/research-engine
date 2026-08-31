@@ -67,7 +67,6 @@
     box-shadow:0 22px 44px -26px rgba(0,0,0,.5)}
   a.card:focus-visible{outline:3px solid var(--teal); outline-offset:3px}
   .card--arch{border-top:4px solid var(--teal)}
-  .card--journey{border-top:4px solid var(--amber)}
   .card--layers{border-top:4px solid #6366F1}
   .card--layers .open{color:#6366F1}
 
@@ -76,7 +75,6 @@
   a.card p{font-size:14.5px; color:var(--muted); margin:0 0 18px}
   .open{margin-top:auto; font-family:var(--mono); font-size:12px; letter-spacing:.04em;
     color:var(--teal-deep); display:inline-flex; align-items:center; gap:6px}
-  .card--journey .open{color:var(--amber)}
   .open svg{width:13px; height:13px}
 
   .foot{margin-top:34px; border-top:1px solid var(--line); padding-top:18px;
@@ -90,7 +88,7 @@
 <body>
 <div class="wrap">
   <p class="eyebrow">Research Engine · Visual Overview</p>
-  <h1>How Research Engine works, in three views.</h1>
+  <h1>How Research Engine works, in two views.</h1>
   <p class="lede">A Claude Code-native framework that makes UX and Product research repeatable,
   governed, and evaluated by a separate LLM-as-judge. The first real study hardened it further.
   Pick a view. Each opens in a new tab.</p>
@@ -101,15 +99,6 @@
       <h2>System architecture</h2>
       <p>How the pieces fit together, from the config layer to the router, the phase skills, the
       judge, and the guardrails.</p>
-      <span class="open">Open in new tab
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
-      </span>
-    </a>
-    <a class="card card--journey" href="docs/user-journey.html" target="_blank" rel="noopener">
-      <span class="glyph" aria-hidden="true">🚶</span>
-      <h2>User journey</h2>
-      <p>The end-to-end experience step by step, from a plain-language ask to an insight a PM can
-      act on Monday.</p>
       <span class="open">Open in new tab
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
       </span>
