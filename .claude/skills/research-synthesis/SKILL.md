@@ -28,6 +28,15 @@ Consolidate tags into **6–10 higher-level themes**. For each, record in `templ
 - a clear descriptive name (what users did/said, not why)
 - **participant numbers** contributing (and the count)
 - 2–3 strongest supporting quotes, attributed
+- **a trace for every participant you counted** — not just the ones you quoted. Each counted
+  participant needs a displayed quote, a code-ID citation (`P05 → 05-12`), or an explicit adjacency note
+  saying why they're counted on weaker evidence. **A bare participant list is the single most common
+  real-world failure of this step**: the count is real in your notes and unverifiable to everyone else.
+- **an evidence type per participant** — `observed` / `self-report` / `second-hand` /
+  `system-description`. Never claim observational strength for a theme where only some evidence was
+  observed.
+- **one sentence stating the theme's claim.** Then test each participant's evidence against that exact
+  sentence. If the sentence needs an "and", you have two themes with two different counts — split them.
 - **contradicting evidence** (don't hide it)
 - a **"limited evidence" flag** for any theme under 3 participants — it's a hypothesis, not a finding
 
@@ -39,8 +48,36 @@ Critique your own synthesis:
 - candidate theme merges/splits
 
 ## Step 5 — Judge it
-Invoke **`ux-research-judge`** with rubric `synthesis`. It spot-checks quote fidelity, participant
-breadth, over-consensus, and descriptive-vs-inferential framing. Revise and re-judge until accepted.
+Invoke **`ux-research-judge`** with rubric `synthesis`. It checks quote fidelity, participant breadth,
+over-consensus, and descriptive-vs-inferential framing.
+
+**Bounded retry — the same policy the eval harness uses (`evals/README.md`):**
+
+- **Acceptable:** `PASS`, or `NEEDS-WORK` carrying only `WARN` criteria and **no** `FAIL` criteria.
+- **Not acceptable:** `FAIL`, or any criterion at `FAIL` → revise and re-judge.
+- **At most 2 re-judges** (3 passes total). Then stop.
+- **Log every pass**, including the ones you revised away — put the judge history in the artifact itself
+  so a reader can see what had to be corrected and what forced each correction.
+- **If it is still not acceptable after the third pass, escalate to the user and say so plainly in the
+  artifact.** State what each pass returned and what you believe the candidate causes are. Do not keep
+  looping: against a non-deterministic grader an unbounded loop eventually passes by luck rather than by
+  improvement.
+
+Acceptance of the artifact is **the human's**, not the judge's — a warn-level verdict means the gate is
+satisfied, not that the work is right.
+
+**Re-judge after every revision, without exception.** A fix is a new draft, not a patch. Two things
+observed in live use make this non-negotiable:
+
+- **Remediation text is itself unverified content, and it can regress.** In one study, the fix for an
+  incomplete-audit problem *introduced* a new defect: a disclaimer that admitted the audit was
+  incomplete and then asserted, in the same paragraph, that the unchecked themes were safe. The
+  assertion was false. The original draft did not contain that error; the fix created it.
+- **Judge scores are not comparable unless depth is held constant.** The same study scored
+  2/5 → 4/5 → **3/5**; the score fell on the pass that re-derived participant counts where the previous
+  pass had sampled. A rising score is not proof of improving work. If a pass returns a better score
+  without having done the full per-participant re-derivation the rubric now mandates, treat the result
+  as unverified rather than as progress.
 
 ## Guardrails (hard rules)
 - **No quote without a verbatim source** (`P#` + location).

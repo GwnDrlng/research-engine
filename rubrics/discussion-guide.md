@@ -25,6 +25,21 @@ concrete fix. AI-written guides frequently contain leading or priming language �
 5. **Structure & flow** — Warm-up before core, easy → hard, non-leading task framing, wrap-up that
    invites what was missed.
 
+## What counts as acceptable
+
+Consumers of this rubric (`evals/run-evals.sh` and the phase skills) treat **`PASS`, or `NEEDS-WORK`
+carrying only `WARN` criteria and no `FAIL` criteria**, as acceptable. Anything with a criterion at
+`FAIL` is not.
+
+Be deliberate about `WARN` versus `FAIL` — that boundary is where the gate opens or closes. `WARN` is for
+something a reader should know that does not make the artifact misleading. `FAIL` is for where a reader
+acting on the artifact would be misled.
+
+**Do not infer a threshold that is not written here.** If this section does not cover your case, say so
+rather than supplying a rule. A judge has previously cited a non-existent *"WARN allowed on at most one
+non-anti-fabrication criterion"* provision as though this file contained it, and reached a defensible
+conclusion by way of a fabricated citation.
+
 ## Anti-fabrication checks (hard fails)
 - No question presupposes a finding the research hasn't produced.
 

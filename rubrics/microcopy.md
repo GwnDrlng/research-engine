@@ -19,6 +19,20 @@ emotional moment is the failure mode to catch.
 
 5. **No dark patterns** — No manipulation, false urgency, or confusing opt-outs. `FAIL` on any.
 
+## What counts as acceptable
+
+Consumers of this rubric (`evals/run-evals.sh` and the phase skills) treat **`PASS`, or `NEEDS-WORK`
+carrying only `WARN` criteria and no `FAIL` criteria**, as acceptable. Anything with a criterion at
+`FAIL` is not.
+
+Be deliberate about `WARN` versus `FAIL` — that boundary is where the gate opens or closes. `WARN` is for
+something a reader should know that does not make the artifact misleading. `FAIL` is for where a reader
+acting on the artifact would be misled.
+
+**Do not infer a threshold that is not written here.** If this section does not cover your case, say so
+rather than supplying a rule — a judge has previously cited a non-existent acceptance provision as though
+a rubric file contained it.
+
 ## Output format
 ```
 VERDICT: PASS | NEEDS-WORK | FAIL
