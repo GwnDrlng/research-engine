@@ -146,6 +146,23 @@
   }
   .sectlabel::after{content:"";flex:1;height:1px;background:var(--line)}
 
+  .stubline{font-size:12.5px; color:var(--muted); margin:12px 0 0; line-height:1.6}
+
+  .loop{font-family:var(--mono); font-size:11px; color:var(--amber); margin:10px 0 2px;
+    letter-spacing:.02em; line-height:1.6}
+
+  /* data flow strip */
+  .dataflow{display:grid; grid-template-columns:1fr auto 1.25fr auto 1fr; gap:10px; align-items:stretch}
+  @media (max-width:680px){.dataflow{grid-template-columns:1fr}.darrow{text-align:left}}
+  .dnode{border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:14px 16px}
+  .dnode--priv{border-style:dashed; border-color:var(--coral)}
+  .dname{font-family:var(--mono); font-size:13px; color:var(--teal-deep); margin:0 0 6px}
+  .ddesc{font-size:12.5px; color:var(--muted); margin:0; line-height:1.5}
+  .darrow{align-self:center; font-family:var(--mono); font-size:10px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--muted); white-space:nowrap}
+  .badge{font-family:var(--mono); font-size:9.5px; color:var(--coral); background:var(--coral-wash);
+    padding:1px 7px; border-radius:999px; letter-spacing:.06em; text-transform:uppercase; margin-left:6px}
+
   .principle{
     margin-top:40px; border-top:1px solid var(--line); padding-top:22px;
     font-family:var(--serif); font-style:italic; font-size:clamp(19px,3vw,24px);
@@ -162,11 +179,9 @@
   <p class="eyebrow">Research Engine · System Architecture</p>
   <h1>The governed research pipeline</h1>
   <p class="tagline">From a plain-language ask to a defensible insight.</p>
-  <p class="lede">Built for UX and product researchers who run the same arc on every study, then lose
-  hours to the setup around each step. Plan, interview, synthesize, report; Research Engine does the
-  mechanical heavy lifting at every stage. What it never does is decide. You stay the one who judges
-  what a finding means, and the framework is reusable, so every study starts from the same rigor
-  instead of a blank page.</p>
+  <p class="lede">Built for UX and product researchers who lose hours to the setup. Research Engine
+  does the mechanical heavy lifting across plan, interview, synthesize, and report. The framework is
+  reusable, so every study starts from the same rigor.</p>
 
   <div class="term" role="img" aria-label="Terminal showing a user typing a research request">
     <div class="term__bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -200,7 +215,11 @@
       <div class="phase"><span class="n">03 · SYNTHESIZE</span><h4>research-synthesis</h4><p>Code → cluster → self-audit into themes.</p></div>
       <div class="phase"><span class="n">04 · REPORT</span><h4>research-insights</h4><p>6-part insights, format-shifted.</p></div>
     </div>
-    <p class="flowlabel">every artifact is handed to ↓</p>
+    <p class="stubline">All phase skills live in <span class="file">.claude/skills/</span>, alongside three
+    stubs awaiting a first study, <span class="file">ux-writing</span>, <span class="file">ux-prototype</span>,
+    and <span class="file">ux-handoff</span>. A Product Brief review skill sits at the repo root in
+    <span class="file">Product-brief-SKILL.md</span>, outside the skill system for now.</p>
+    <p class="flowlabel">every artifact enters the judge loop ↓</p>
   </div>
 
   <div class="rails">
@@ -208,19 +227,24 @@
       <p class="k">Quality gate</p>
       <h3>ux-research-judge</h3>
       <p class="layer__desc" style="margin-bottom:2px">A <em>separate</em> subagent, uncontaminated by
-      the drafting context. Scores against <span class="file">rubrics/</span>.</p>
+      the drafting context. Defined in <span class="file">.claude/agents/</span>, scores against
+      <span class="file">rubrics/</span>.</p>
+      <p class="loop">draft → judge → revise → re-judge ↺ at most 2 → accept, or escalate to you</p>
       <ul>
-        <li>Per-criterion PASS / WARN / FAIL + ranked fixes</li>
-        <li>Bias &amp; leading-language screen</li>
-        <li>Quote fidelity &amp; participant-breadth honesty</li>
-        <li>Evidence proportionality</li>
+        <li>Per-criterion PASS / WARN / FAIL + ranked fixes. Warn-level clears the gate, any
+        FAIL blocks it</li>
+        <li>Bias &amp; leading-language screen, quote fidelity, evidence proportionality</li>
+        <li>Participant-count tracing. Every counted participant needs a displayed quote, a code-ID
+        citation, or an adjacency note, verified one participant at a time with no sampling</li>
+        <li>Bounded retry. At most 2 re-judges, every pass logged in the artifact, then escalation
+        to the human rather than a loop that passes by luck</li>
       </ul>
     </div>
     <div class="rail rail--gov">
       <p class="k">Wraps everything</p>
       <h3>Governance &amp; guardrails</h3>
       <p class="layer__desc" style="margin-bottom:2px"><span class="file">governance/</span> +
-      a <span class="file">PreToolUse</span> hook.</p>
+      a <span class="file">PreToolUse</span> hook in <span class="file">.claude/settings.json</span>.</p>
       <ul>
         <li>PII → deliverables use P1..Pn, raw data stays gitignored</li>
         <li>Approval gate (<span style="font-family:var(--mono)">GATE_MODE: warn</span>, bypassable)</li>
@@ -230,16 +254,67 @@
     </div>
   </div>
 
+  <p class="sectlabel">Where artifacts live</p>
+  <div class="dataflow">
+    <div class="dnode">
+      <p class="layer__tag">Scaffolds · committed</p>
+      <p class="dname">templates/</p>
+      <p class="ddesc">One reusable scaffold per deliverable type, including the journey-layers
+      visualization.</p>
+    </div>
+    <span class="darrow" aria-hidden="true">→ copy into</span>
+    <div class="dnode dnode--priv">
+      <p class="layer__tag">Real study data <span class="badge">gitignored</span></p>
+      <p class="dname">projects/&lt;study-slug&gt;/</p>
+      <p class="ddesc">Transcripts, coding files, and deliverables. Participants appear as P1..Pn.
+      Nothing here is ever committed, so real data stays on your machine.</p>
+    </div>
+    <span class="darrow" aria-hidden="true">→ scored against</span>
+    <div class="dnode">
+      <p class="layer__tag">Scoring checklists · committed</p>
+      <p class="dname">rubrics/</p>
+      <p class="ddesc">One rubric per deliverable type, read by the judge on every pass.</p>
+    </div>
+  </div>
+
   <p class="sectlabel">Proven, not assumed</p>
   <div class="layer">
     <p class="layer__tag">Regression guard</p>
     <p class="layer__name">evals/, meta-evaluating the judge <span class="file">evals/run-evals.sh</span></p>
     <p class="layer__desc">Synthetic fixtures with planted defects (a leading discussion guide, an
-    over-claimed synthesis) plus clean counterparts. The harness spawns the judge and asserts it flags
-    the bad and passes the good, so tuning a rubric can't silently break the gate.</p>
+    over-claimed synthesis, a counting-family fixture with untraced participants and compound claims)
+    plus clean counterparts. The harness spawns the judge and asserts it flags the bad and passes the
+    good, so tuning a rubric can't silently break the gate. A consistency case judges the same fixture
+    twice and requires matching verdict, score, and untraced-participant count. If judge depth varies
+    between passes, scores across revisions can't be compared.</p>
   </div>
 
-  <p class="principle"><b>The value isn't in generating faster.</b> It's in evaluating better.
+  <p class="sectlabel">Field-tested</p>
+  <div class="layer">
+    <p class="layer__tag">Learned in live use</p>
+    <p class="layer__name">Hardened by the first real study <span class="file">evals/observed-failure-modes.md</span></p>
+    <p class="layer__desc">The first study ran 11 participants through 3 judge passes. Every
+    correction concerned participant counting and claim scoping, so the synthesis rubric, the skills,
+    and the eval suite were rebalanced toward the errors that occur in practice. Quote fidelity held
+    clean, with zero fabrications across roughly 40 checked quotes. Each judge pass is logged in
+    <span class="file">evals/run-log.md</span>, and the remaining follow-ups live in
+    <a href="open-items.html" style="color:var(--teal-deep)">Open items</a>.</p>
+  </div>
+  <div class="layer" style="margin-top:12px">
+    <p class="layer__tag">Growing edges</p>
+    <p class="layer__name">New templates &amp; skills</p>
+    <p class="layer__desc">A brand-neutral journey-layers visualization extracted from the study,
+    <span class="file">templates/journey-layers.html</span>, with stages, a tool matrix, roles, and
+    sentiment wired to evidence. It was the deliverable stakeholders responded to most strongly in
+    live use, and a filled-in synthetic
+    <a href="journey-layers-example.html" style="color:var(--teal-deep)">demo</a> shows the full
+    effect. A Product Brief review skill in
+    <span class="file">Product-brief-SKILL.md</span>. A computed-styles visual baseline in
+    <span class="file">docs/design-baseline.md</span> so HTML deliverables reuse one verified
+    palette on every study.</p>
+  </div>
+
+  <p class="principle"><b>The value is in evaluating better.</b>
   AI drafts and organizes. Human judgment is the product.</p>
   <p class="foot">research-engine · MIT · a Claude Code-native framework</p>
 </div>

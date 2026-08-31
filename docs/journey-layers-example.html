@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journey Layers Demo · Research Engine</title>
+<!--
+  DEMO · Journey Layers, filled in with synthetic data
+  ====================================================
+  A worked example of templates/journey-layers.html so readers can see the
+  deliverable, not just the scaffold. Every stage, role, participant, quote,
+  and number below is invented. Nothing on this page is a research finding.
+
+  To build one for a real study: copy templates/journey-layers.html into
+  projects/<study-slug>/ (gitignored) and fill the CONST block there, citing
+  participants as P1..Pn with verbatim sources. Never fill in real data here
+  or anywhere else under version control.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111; --ink-2:#555; --ink-3:#8a8a8a; --ink-4:#c4c4c4;
+  --paper:#fff; --fill-1:#111; --fill-2:#777; --fill-3:#bbb; --fill-4:#e6e6e6;
+  --rule:#111; --rule-soft:#d5d5d5;
+  --pos:#2563EB;
+  --neg:#D9600A;
+  --neu:#9a9a9a;
+  --hero:#6366F1;
+  --sys-a:#5B5BD6;
+  --sys-b:#A8741F;
+  --sys-a-band:rgba(99,102,241,.11);
+  --sys-b-band:rgba(245,181,68,.20);
+  --band:rgba(150,140,120,.06);
+  --pos-soft:rgba(37,99,235,.12);
+  --neg-soft:rgba(217,96,10,.13);
+  --stage-1:#4C3FD1; --stage-2:#5B54E0; --stage-3:#6366F1; --stage-4:#4F7BEE; --stage-5:#3B8FE8;
+  --sans:'Poppins',-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:'DM Mono',ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --col:46px;
+  --gutter:186px;
+  --rowh:19px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+body{padding:34px 0 70px;
+  background-image:radial-gradient(ellipse 1100px 380px at 12% -6%, rgba(99,102,241,.13), transparent 62%),
+                   radial-gradient(ellipse 900px 320px at 78% -10%, rgba(37,99,235,.10), transparent 62%);
+  background-repeat:no-repeat}
+.pad{padding:0 34px}
+h1{font-weight:500;font-size:30px;color:#1c1a3a;letter-spacing:-.01em;margin:0 0 6px}
+h1 b{font-weight:600;background:linear-gradient(92deg,#4C3FD1,#3B8FE8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin:0 0 12px}
+.lede{font-size:13.5px;color:var(--ink-2);max-width:96ch;line-height:1.6;margin:0 0 4px}
+.note{font-size:12px;color:var(--ink-2);max-width:100ch;line-height:1.55}
+.banner{margin:18px 0 26px;border:1px solid var(--rule);border-left-width:4px;padding:12px 16px;font-size:12.5px;color:var(--ink-2);line-height:1.6;max-width:110ch}
+.banner b{color:var(--ink)}
+.legend{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 8px}
+.legend span{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--ink-4);border-radius:999px;padding:4px 12px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.k{width:9px;height:9px;border-radius:50%;flex:none;border:1.5px solid var(--ink)}
+.k.solid{background:var(--ink)} .k.hollow{background:var(--paper)}
+.k.sq{border-radius:2px;background:var(--ink)} .k.dash{border-style:dashed;background:var(--paper);opacity:.45}
+
+/* ---- shared horizontal canvas ---- */
+.scroller{overflow-x:auto;overflow-y:hidden;padding:0 34px 6px;scrollbar-width:thin}
+.canvas{position:relative;width:max-content;min-width:100%}
+.bands{position:absolute;inset:0;pointer-events:none;z-index:0}
+.bands i{position:absolute;top:0;bottom:0;background:var(--band)}
+.canvas > .layer, .canvas > .matrix{position:relative;z-index:1}
+.layer{display:grid;align-items:end}
+.lab{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-2);
+     padding-right:16px;text-align:right;align-self:center;line-height:1.35}
+.lab b{display:block;color:var(--ink);font-weight:500}
+
+/* stages */
+.stagerow{margin-bottom:10px}
+.chev{position:relative;height:42px;display:flex;align-items:center;justify-content:center;margin-right:12px;
+      font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper);
+      clip-path:polygon(0 0,calc(100% - 17px) 0,100% 50%,calc(100% - 17px) 100%,0 100%);padding:0 8px;text-align:center}
+.chev.s1{background:var(--stage-1)} .chev.s2{background:var(--stage-2)} .chev.s3{background:var(--stage-3)}
+.chev.s4{background:var(--stage-4)} .chev.s5{background:var(--stage-5)}
+
+/* steps */
+.steprow{margin-bottom:16px}
+.step{border:1px solid var(--rule-soft);border-left:2px solid var(--hero);margin-right:4px;min-height:40px;
+      padding:5px 7px;font-size:9.5px;line-height:1.25;color:var(--ink);display:flex;align-items:center}
+
+/* points of contact */
+.poc{position:relative;height:236px;margin-bottom:26px}
+.altbr{position:absolute;bottom:-19px;height:7px;border:1px solid var(--ink);border-top:0}
+.altbr span{position:absolute;left:50%;top:2px;transform:translateX(-50%);background:var(--paper);padding:0 5px;
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap}
+.poc .cell{position:relative;height:100%}
+.poc .stem{position:absolute;left:50%;bottom:0;width:1px;height:20px;background:var(--rule-soft);transform:translateX(-.5px)}
+.poc .dot{position:absolute;left:50%;bottom:20px;width:11px;height:11px;border-radius:50%;border:1.5px solid var(--ink);
+     background:var(--paper);transform:translateX(-50%);cursor:pointer}
+.poc .dot.themed{background:var(--ink)}
+.poc .cap{position:absolute;left:50%;bottom:36px;transform-origin:0 100%;transform:rotate(-62deg);white-space:nowrap;
+     font-size:9px;line-height:1;color:var(--ink);letter-spacing:.005em}
+.poc .cap i{font-family:var(--mono);font-style:normal;color:var(--ink-3);font-size:8px;margin-right:4px}
+.poc .rec{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);font-family:var(--mono);font-size:7px;color:var(--ink-3)}
+
+/* per-stage counters */
+.countrow{margin:2px 0 14px}
+.cnt{display:flex;justify-content:center}
+.cnt b{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 7px;
+   border-radius:999px;background:var(--hero);color:#fff;font-family:var(--mono);font-size:10.5px;font-weight:500}
+.cnt.ghost b{background:var(--paper);color:var(--hero);border:1px solid var(--hero)}
+.cnt em{font-style:normal;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-left:7px;align-self:center}
+
+/* matrices */
+.matrix{position:relative;border-top:1px solid var(--rule-soft);margin-bottom:4px}
+.mrow{display:grid;align-items:center;border-bottom:1px solid var(--rule-soft);height:var(--rowh)}
+.mrow.muted{opacity:.4;border-bottom-style:dashed}
+.mrow.sys-a{background:var(--sys-a-band)}
+.mrow.sys-b{background:var(--sys-b-band)}
+.mrow.sys-a > .lab{color:var(--sys-a);font-weight:500}
+.mrow.sys-b > .lab{color:var(--sys-b);font-weight:500}
+.mrow .lab{font-size:9px;letter-spacing:.1em;padding-right:14px}
+.mcell{position:relative;height:100%}
+.mdot{position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:var(--ink);transform:translate(-50%,-50%)}
+.mdot.open{background:var(--paper);border:1.4px solid var(--ink)}
+.trace{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.trace polyline{fill:none;stroke:var(--hero);stroke-width:1.3;opacity:.75}
+
+/* duration */
+.durwrap{margin:6px 0 4px;display:grid}
+.durbar{display:flex;height:34px;border:1px solid var(--ink)}
+.durseg{position:relative;border-right:1px solid var(--paper);display:flex;align-items:center;justify-content:center;
+   font-family:var(--mono);font-size:9px;color:var(--paper);overflow:hidden}
+.durseg:last-child{border-right:0}
+.durseg.l{color:var(--ink)}
+.durseg.un{background:repeating-linear-gradient(45deg,var(--paper),var(--paper) 4px,var(--fill-4) 4px,var(--fill-4) 8px);color:var(--ink-2)}
+.durticks{display:flex;margin-top:4px}
+.durticks div{font-size:8.5px;color:var(--ink-3);text-align:center;line-height:1.2;padding:0 2px;border-left:1px solid var(--rule-soft)}
+
+/* parallel lane */
+.lane{border:1px dashed var(--ink);padding:9px 12px 11px;margin-top:8px;display:grid}
+.lane .lab{align-self:center}
+.lanetrack{display:flex;align-items:center;gap:0}
+.lanestep{flex:1;position:relative;font-size:9.5px;line-height:1.25;padding:0 9px;text-align:center;color:var(--ink)}
+.lanestep::after{content:"→";position:absolute;right:-6px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-size:10px}
+.lanestep:last-child::after{content:""}
+.lanestep i{display:block;font-family:var(--mono);font-style:normal;font-size:8px;color:var(--ink-3);margin-top:3px}
+
+/* experience */
+.expwrap{display:flex;gap:0;align-items:stretch;border-top:1px solid var(--rule);margin-top:26px}
+.expchart{flex:1;min-width:0;overflow-x:auto;padding:22px 0 10px 34px}
+.expinner{width:max-content;position:relative}
+.axis{position:relative;height:330px}
+.axis .zero{position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--ink)}
+.axis .yline{position:absolute;left:-10px;top:0;bottom:0;border-left:1px solid var(--ink)}
+.axis .ytag{position:absolute;left:-8px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.axis .ytag.up{color:var(--pos)} .axis .ytag.dn{color:var(--neg)}
+.axis .grid{position:absolute;top:0;bottom:0;width:1px;background:var(--rule-soft);opacity:.55}
+.axis .xband{position:absolute;top:0;bottom:0;background:var(--band);z-index:0}
+.epoint{z-index:2}
+.epoint{position:absolute;width:13px;height:13px;border-radius:50%;border:1.5px solid var(--neu);background:var(--paper);
+   transform:translate(-50%,-50%);cursor:pointer;transition:transform .12s}
+.epoint.themed{background:var(--neu)}
+.epoint.pos{border-color:var(--pos)} .epoint.pos.themed{background:var(--pos)}
+.epoint.neg{border-color:var(--neg)} .epoint.neg.themed{background:var(--neg)}
+.epoint:hover{transform:translate(-50%,-50%) scale(1.45)}
+.epoint.on{box-shadow:0 0 0 4px var(--paper),0 0 0 5.5px var(--ink)}
+.epoint span{position:absolute;left:50%;top:-15px;transform:translateX(-50%);font-family:var(--mono);font-size:8px;color:var(--ink-2)}
+.epoint.themed span{color:var(--ink-2)}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--ink);color:var(--paper);font-size:11px;
+   padding:6px 9px;max-width:250px;line-height:1.35;opacity:0;transition:opacity .1s}
+.tip b{font-family:var(--mono);font-weight:500;opacity:.6;margin-right:6px}
+
+.expside{width:392px;flex:none;border-left:1px solid var(--rule);padding:18px 34px 18px 20px;
+   max-height:88vh;overflow-y:auto;position:sticky;top:0}
+.expside h3{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);font-weight:500;margin:0 0 3px}
+.expside .sub{font-size:11.5px;color:var(--ink-3);margin:0 0 14px;line-height:1.5}
+.item{border-bottom:1px solid var(--rule-soft)}
+.ihead{display:flex;gap:9px;align-items:flex-start;padding:9px 0;cursor:pointer;font-size:12px;line-height:1.35}
+.ihead .sign{font-family:var(--mono);font-size:13px;width:12px;flex:none;color:var(--ink-2);line-height:1.2}
+.ihead .num{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);flex:none;width:20px;line-height:1.5}
+.ihead .nm{flex:1}
+.ihead .val{font-family:var(--mono);font-size:9px;color:var(--ink-3);flex:none;margin-top:1px;
+   padding:1px 7px;border-radius:999px;line-height:1.5}
+.ihead .val.pos{color:var(--pos);background:var(--pos-soft)}
+.ihead .val.neg{color:var(--neg);background:var(--neg-soft)}
+.item.open .ihead{font-weight:500}
+.item.on{background:rgba(99,102,241,.07);margin:0 -10px;padding:0 10px;border-radius:6px}
+.ibody{display:none;padding:0 0 14px 41px}
+.item.open .ibody{display:block}
+.meta{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
+   border:1px solid var(--ink-4);border-radius:999px;padding:2px 8px;display:inline-block;margin:0 5px 8px 0}
+.q{border-left:2px solid var(--ink);padding:2px 0 2px 11px;margin:0 0 9px;font-size:11.5px;line-height:1.5;color:var(--ink)}
+.q cite{display:block;font-family:var(--mono);font-style:normal;font-size:9px;color:var(--ink-3);margin-top:4px;letter-spacing:.05em}
+.pend{font-size:11px;color:var(--ink-3);font-style:italic;line-height:1.5}
+h2{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;
+   color:var(--ink-2);margin:34px 0 3px;padding-top:16px;border-top:1px solid var(--rule-soft)}
+h2 b{color:var(--hero);font-weight:500}
+.hint{font-size:11.5px;color:var(--ink-3);margin:0 0 12px;line-height:1.5;max-width:100ch}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--rule-soft);font-size:11px;color:var(--ink-3);line-height:1.65;max-width:110ch}
+footer b{color:var(--ink-2)}
+
+/* ---- role isolation ---- */
+.rolebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 2px}
+.rolebar .rl{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-right:2px}
+.rolebar button{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  border:1px solid var(--ink-4);background:var(--paper);color:var(--ink-2);border-radius:999px;
+  padding:5px 13px;cursor:pointer;transition:background .12s,color .12s,border-color .12s}
+.rolebar button:hover{border-color:var(--ink-2);color:var(--ink)}
+.rolebar button.sel{background:var(--hero);border-color:var(--hero);color:#fff}
+.rolebar button.clear{border-style:dashed}
+.tot{display:flex;align-items:center;gap:8px;padding-left:16px;border-left:1px solid var(--rule-soft);margin-left:10px}
+.tot b{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 9px;border-radius:999px;
+  background:var(--ink);color:#fff;font-family:var(--mono);font-size:12px;font-weight:500}
+.tot.ghost b{background:var(--paper);color:var(--ink);border:1.5px solid var(--ink)}
+.tot em{font-style:normal;font-family:var(--mono);font-size:8.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);line-height:1.3;max-width:74px}
+.rolebar .cnt-note{font-size:11px;color:var(--ink-3);margin-left:4px}
+
+body.iso .off{opacity:.13}
+body.iso .poc .cell.off .cap{opacity:.13}
+body.iso .mrow.off{opacity:.16}
+body.iso .mrow.off.muted{opacity:.1}
+body.iso .item.off{opacity:.3}
+body.iso .epoint.off{opacity:.15}
+body.iso .epoint.off:hover{opacity:.5}
+body.iso .trace polyline{opacity:.12}
+.cell,.mcell,.mrow,.item,.epoint{transition:opacity .15s}
+.trace polyline.isoline{stroke:var(--hero);stroke-width:1.8;opacity:.9}
+</style>
+</head>
+<body>
+
+<div class="pad">
+  <p class="eyebrow">Research Engine · Journey layers · Synthetic demo</p>
+  <h1>Checkout drop-off <b>layers</b></h1>
+  <p class="lede">Read top to bottom: what stage the shopper is in, what happens, every action someone
+  takes, which tool that action happens in, who does it, how long it takes, and how it feels.</p>
+
+  <div class="banner">
+    <b>Synthetic demo.</b> Every stage, participant, quote, and number on this page is invented to
+    show what a filled-in journey layers deliverable looks like. Nothing here is a research finding.
+    The blank scaffold is <code>templates/journey-layers.html</code>. To build one for a real study,
+    copy the template into <code>projects/&lt;study-slug&gt;/</code> (gitignored) and fill it there,
+    citing participants as P1..Pn with verbatim sources. Real study data never enters
+    <code>docs/</code>.
+  </div>
+
+  <div class="legend">
+    <span><i class="k solid"></i>Themed · a synthesis finding (3+ participants)</span>
+    <span><i class="k hollow"></i>Mentioned · below theme threshold</span>
+    <span><i class="k dash"></i>Not researched</span>
+    <span><i class="k" style="border-color:var(--pos);background:var(--pos)"></i>Positive experience</span>
+    <span><i class="k" style="border-color:var(--neg);background:var(--neg)"></i>Negative experience</span>
+    <span><i class="k sq"></i>Role / tool active at this point</span>
+    <span>↻ recurring, repeats across the journey</span>
+  </div>
+
+  <div class="rolebar" id="rolebar"><span class="rl">Isolate role</span></div>
+</div>
+
+<div class="scroller" id="scroller">
+  <div class="canvas" id="canvas">
+
+    <div class="layer stagerow" id="L-stage"></div>
+    <div class="layer steprow"  id="L-step"></div>
+
+    <div class="layer poc"      id="L-poc"></div>
+    <div class="layer countrow" id="L-poccount"></div>
+
+    <div class="layer" id="L-toolhead"></div>
+    <div class="matrix" id="L-tool"></div>
+    <div class="layer countrow" id="L-toolcount"></div>
+
+    <div class="layer" id="L-rolehead"></div>
+    <div class="matrix" id="L-role"></div>
+    <div class="layer countrow" id="L-rolecount"></div>
+
+    <div class="layer" id="L-durhead"></div>
+    <div class="layer durwrap" id="L-dur"></div>
+
+    <div class="layer" id="L-lane"></div>
+
+  </div>
+</div>
+
+<div class="pad">
+  <h2><b>Customer Journey Experience</b></h2>
+  <p class="hint">One point per action. Height is how participants described it. Hover for the name,
+  click to open its evidence. Solid = a theme, hollow = individual mentions.</p>
+</div>
+
+<div class="expwrap">
+  <div class="expchart" id="expchart">
+    <div class="expinner" id="expinner">
+      <div class="axis" id="axis"></div>
+    </div>
+  </div>
+  <aside class="expside" id="expside">
+    <h3>Evidence</h3>
+    <p class="sub">Click a point, or open an item to highlight it. All quotes below are invented for
+    the demo.</p>
+    <div id="items"></div>
+  </aside>
+</div>
+
+<div class="pad">
+  <footer>
+    <b>Sourcing.</b> Duration figures and the parallel promo lane are invented for this demo. In a
+    real deliverable, name the source, date, and scope of any structural or duration data, and keep
+    company figures separate from participants' verbal estimates.<br>
+    <b>Participants.</b> P01–P07 are fictional. In a real deliverable no name, employer, or contact
+    detail appears here.
+  </footer>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+/* ============================ DATA ============================
+   SYNTHETIC DEMO DATA. Every entry is invented.
+   s  = sentiment, -2 (worst) … +2 (best), null = no experience evidence
+   th = synthesis theme (solid dot) · null = individual mentions only (hollow dot)
+   q  = [participant, timestamp_or_line, verbatim]
+============================================================== */
+const STAGES=[
+ {k:"A",n:"Browse",     c:"s1"},
+ {k:"B",n:"Cart",       c:"s2"},
+ {k:"C",n:"Checkout",   c:"s3"},
+ {k:"D",n:"Post-order", c:"s5"}
+];
+const ROLES=[
+ {k:"SH", n:"Shopper"},
+ {k:"SUP",n:"Support agent"},
+ {k:"OPS",n:"Fulfilment ops", muted:true}
+];
+const TOOLS=[
+ {k:"WEB", n:"Storefront"},
+ {k:"PAY", n:"Payment form"},
+ {k:"EM",  n:"Email"},
+ {k:"CHAT",n:"Support chat"},
+ {k:"AH",  n:"Memory / ad hoc"}
+];
+
+const CP=[
+{struct:1,t:"Lands on a product page from an ad",st:"A",sp:"Arrive",r:["SH"],tl:["WEB"],s:null,th:null,n:0,q:[]},
+{t:"Compares variants across open tabs",st:"A",sp:"Compare",r:["SH"],tl:["WEB"],s:1,th:"Browsing feels in control",n:4,
+ note:"Participants described browsing as the part of the journey they trust. The friction they report starts later.",
+ q:[["P02","00:08:51","I keep four tabs open and flip between them. That part is easy, honestly the fun part."],
+    ["P05","00:14:22","Browsing is fine. I never worry at that stage."]]},
+{t:"Hunts for the shipping cost before committing",st:"A",sp:"Compare",r:["SH"],tl:["WEB"],s:-1,th:"Hidden costs erode trust",n:5,
+ q:[["P01","00:12:40","If I can't find shipping before checkout I assume it's going to be bad news."],
+    ["P06","L44","I scroll the whole product page looking for a shipping number and it's never there."]]},
+{t:"Adds to cart, keeps browsing ↻",st:"B",sp:"Build cart",r:["SH"],tl:["WEB"],s:1,th:null,n:2,rec:1,
+ q:[["P03","00:19:05","The cart is basically my wishlist."]]},
+{t:"Abandons the cart to think it over",st:"B",sp:"Build cart",r:["SH"],tl:["AH"],s:0,th:null,n:2,
+ q:[["P07","00:21:30","I leave it overnight. If I still want it tomorrow, I buy it."]]},
+{t:"Signs in to an existing account",st:"C",sp:"Identify",r:["SH"],tl:["WEB"],s:-1,th:null,n:2,alt:"entry",
+ q:[["P03","L38","I never remember which email I used, so the reset dance starts."]]},
+{t:"Continues as guest",st:"C",sp:"Identify",r:["SH"],tl:["WEB"],s:2,th:"Guest path feels fast",n:3,alt:"entry",
+ q:[["P05","00:26:10","Guest checkout is the only reason I finished the order."],
+    ["P02","00:24:47","No account, no password, done in a minute. That's how it should work."]]},
+{t:"Re-enters address after a validation error",st:"C",sp:"Pay",r:["SH"],tl:["PAY"],s:-2,th:"Form errors trigger abandonment",n:6,
+ note:"The strongest negative in the demo data. One quote below runs across a timestamp boundary and is cited with both markers, per CLAUDE.md rule 4a.",
+ q:[["P04","00:31:02 → 00:31:18","It wiped my apartment number and flagged the whole address → so I typed it all again and nearly closed the tab."],
+    ["P01","00:29:55","The error didn't say which field was wrong. I guessed."]]},
+{t:"Digs through email for a promo code",st:"C",sp:"Pay",r:["SH"],tl:["EM"],s:-1,th:"Hidden costs erode trust",n:4,
+ q:[["P06","L61","Seeing the promo box makes me feel like I'm overpaying unless I go hunting."]]},
+{t:"Asks support chat about a card decline",st:"C",sp:"Pay",r:["SH","SUP"],tl:["CHAT"],s:-1,th:null,n:1,
+ q:[["P07","00:38:12","The chat agent was nice but I'd already given up on the order."]]},
+{obs:1,t:"Pauses at the order review screen",st:"C",sp:"Confirm",r:["SH"],tl:["PAY"],s:null,th:null,n:0,q:[]},
+{struct:1,t:"Places the order",st:"C",sp:"Confirm",r:["SH"],tl:["PAY"],s:null,th:null,n:0,q:[]},
+{t:"Reads the confirmation email",st:"D",sp:"Aftermath",r:["SH"],tl:["EM"],s:1,th:null,n:2,
+ q:[["P02","00:44:03","The confirmation with the delivery window is the moment I relax."]]},
+{t:"Checks delivery tracking ↻",st:"D",sp:"Aftermath",r:["SH"],tl:["EM"],s:0,th:null,n:1,rec:1,
+ q:[["P05","L79","I check tracking way more than I need to."]]}
+];
+
+/* duration, share of total elapsed. d:null renders "not measured" */
+const DUR=[
+ {st:"A",n:"Browse",     d:6},
+ {st:"B",n:"Cart",       d:3},
+ {st:"C",n:"Checkout",   d:null},
+ {st:"D",n:"Post-order", d:5}
+];
+
+const LANE=[
+ {n:"Plan promo campaign", s:"marketing, monthly"},
+ {n:"Send promo email blast", s:"weekly"},
+ {n:"Codes expire and rotate", s:"monthly"}
+];
+
+/* ============================ RENDER ============================
+   Rendering engine below. Typically no edits needed here. */
+const N=CP.length, $=id=>document.getElementById(id);
+const gridCols=`var(--gutter) repeat(${N}, var(--col))`;
+const spans=(key)=>{const o=[];CP.forEach((c,i)=>{const v=c[key];if(o.length&&o[o.length-1].v===v)o[o.length-1].len++;else o.push({v,len:1,i});});return o;};
+const stageSpans=spans("st"), stepSpans=spans("sp");
+const stageOf=k=>STAGES.find(s=>s.k===k);
+
+/* stage wayfinding bands, drawn behind every layer */
+{const b=document.createElement("div");b.className="bands";
+ stageSpans.forEach((sp,k)=>{if(k%2)return;const d=document.createElement("i");
+   d.style.left=(186+46*sp.i)+"px";d.style.width=(46*sp.len)+"px";b.appendChild(d);});
+ $("canvas").prepend(b);}
+
+/* stages */
+{const L=$("L-stage");L.style.gridTemplateColumns=gridCols;
+ L.innerHTML=`<div class="lab"><b>Journey</b>stages</div>`+stageSpans.map(s=>{const t=stageOf(s.v);
+   return `<div class="chev ${t.c}" style="grid-column:span ${s.len}">${t.n}</div>`;}).join("");}
+
+/* steps */
+{const L=$("L-step");L.style.gridTemplateColumns=gridCols;
+ L.innerHTML=`<div class="lab"><b>Journey</b>steps</div>`+stepSpans.map(s=>
+   `<div class="step" style="grid-column:span ${s.len}">${s.v}</div>`).join("");}
+
+/* points of contact */
+{const L=$("L-poc");L.style.gridTemplateColumns=gridCols;
+ L.innerHTML=`<div class="lab"><b>Points of</b>contact</div>`+CP.map((c,i)=>
+  `<div class="cell" data-i="${i}"><div class="cap"><i>${i+1}</i>${c.t}</div>
+     <div class="dot ${c.th?"themed":""}" data-i="${i}"></div>
+     <div class="stem"></div>${c.rec?'<div class="rec">↻</div>':""}</div>`).join("");
+ /* "either / or" brackets for actions that are alternative routes, not consecutive steps */
+ const g={};CP.forEach((c,i)=>{if(c.alt)(g[c.alt]=g[c.alt]||[]).push(i);});
+ Object.values(g).forEach(ix=>{const i0=Math.min(...ix),i1=Math.max(...ix);
+   const d=document.createElement("div");d.className="altbr";
+   d.style.left=(186+46*i0+9)+"px";d.style.width=(46*(i1-i0+1)-18)+"px";
+   d.innerHTML='<span>either / or</span>';L.appendChild(d);});}
+
+/* counters helper */
+function counters(target,label,fn,ghost,totId,totLabel){
+  const L=$(target);L.style.gridTemplateColumns=gridCols+" 128px";
+  L.innerHTML=`<div class="lab">${label}</div>`+stageSpans.map(s=>{
+    const seg=CP.slice(s.i,s.i+s.len);
+    return `<div class="cnt ${ghost?"ghost":""}" style="grid-column:span ${s.len}"><b>${fn(seg)}</b></div>`;}).join("")
+   +`<div class="tot ${ghost?"ghost":""}"><b id="${totId}">${fn(CP)}</b><em>${totLabel}</em></div>`;
+}
+counters("L-poccount","",seg=>seg.length,false,"tot-poc","total points of contact");
+
+/* tool switches over an ordered list of points */
+function swCount(list){let sw=0,prev=null;
+  list.forEach(c=>{const cur=c.tl[0];if(prev&&cur&&cur!==prev)sw++;if(cur)prev=cur;
+    if(c.tl.length>1)sw+=c.tl.length-1;});
+  return sw;}
+
+/* tool matrix + trace */
+{const H=$("L-toolhead");H.style.gridTemplateColumns=gridCols;
+ H.innerHTML=`<div class="lab"><b>Tool</b>in use</div>`;
+ const M=$("L-tool");
+ M.innerHTML=TOOLS.map(t=>`<div class="mrow ${t.k==="WEB"?"sys-a":t.k==="PAY"?"sys-b":""}" style="grid-template-columns:${gridCols}">
+   <div class="lab">${t.n}</div>`+CP.map((c,i)=>
+   `<div class="mcell" data-i="${i}">${c.tl.includes(t.k)?'<div class="mdot"></div>':""}</div>`).join("")+`</div>`).join("");
+ /* trace line: connect each point's primary tool left→right */
+ const rowh=19,pts=[];
+ CP.forEach((c,i)=>{c.tl.forEach(tk=>{const r=TOOLS.findIndex(t=>t.k===tk);if(r>=0)pts.push([i,r]);});});
+ const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+ svg.setAttribute("class","trace");svg.style.position="absolute";svg.style.inset="0";
+ const poly=document.createElementNS("http://www.w3.org/2000/svg","polyline");
+ const colw=46,gut=186;
+ poly.setAttribute("points",pts.map(([i,r])=>`${gut+colw*i+colw/2},${rowh*r+rowh/2}`).join(" "));
+ poly.setAttribute("fill","none");poly.setAttribute("stroke","currentColor");
+ poly.setAttribute("stroke-width","1");poly.setAttribute("opacity",".5");
+ svg.appendChild(poly);M.style.position="relative";M.appendChild(svg);
+ /* switch count per stage */
+ counters("L-toolcount","tool switches",seg=>swCount(seg),true,"tot-tool","total tool switches");}
+
+/* roles matrix */
+{const H=$("L-rolehead");H.style.gridTemplateColumns=gridCols;
+ H.innerHTML=`<div class="lab"><b>Roles</b>involved</div>`;
+ $("L-role").innerHTML=ROLES.map(ro=>`<div class="mrow ${ro.muted?"muted":""}" data-role="${ro.k}" style="grid-template-columns:${gridCols}">
+   <div class="lab">${ro.n}${ro.muted?" · not researched":""}</div>`+CP.map((c,i)=>
+   `<div class="mcell" data-i="${i}">${c.r.includes(ro.k)?`<div class="mdot ${c.th?"":"open"}"></div>`:""}</div>`).join("")+`</div>`).join("");
+ counters("L-rolecount","actions by role",seg=>seg.reduce((a,c)=>a+c.r.length,0),
+   false,"tot-role","total actions by role");}
+
+/* duration */
+{const H=$("L-durhead");H.style.gridTemplateColumns=gridCols;
+ H.innerHTML=`<div class="lab"><b>Duration</b>share of total</div>`;
+ const tot=DUR.reduce((a,d)=>a+(d.d||0),0);
+ const L=$("L-dur");L.style.gridTemplateColumns=gridCols;
+ const bar=`<div style="grid-column:2 / span ${N}">
+   <div class="durbar">`+DUR.map((d)=>{
+     if(!d.d)return `<div class="durseg un" style="flex:0 0 90px">not measured</div>`;
+     const pc=(d.d/tot*100), a=(.14+.72*Math.min(pc/29,1)).toFixed(3);
+     const sh=`color-mix(in srgb, var(--hero) ${(a*100).toFixed(0)}%, white)`;
+     const light=a<0.5;
+     return `<div class="durseg ${light?"l":""}" style="flex:${pc} 0 0;background:${sh}" title="${d.n} · ${d.d} days">${pc>=4?pc.toFixed(0)+"%":""}</div>`;
+   }).join("")+`</div>
+   <div class="durticks">`+DUR.map(d=>d.d
+     ?`<div style="flex:${d.d/tot*100} 0 0">${d.n}</div>`
+     :`<div style="flex:0 0 90px">${d.n}</div>`).join("")+`</div>
+   <div style="font-size:11px;color:var(--ink-3);margin-top:9px;line-height:1.5;max-width:88ch">
+     Share of the ${tot}-day measured span. Figures are invented for this demo. Checkout itself was
+     left unmeasured on purpose, to show how the bar renders a gap honestly.
+   </div></div>`;
+ L.innerHTML=`<div class="lab"></div>`+bar;}
+
+/* parallel lane */
+{const L=$("L-lane");L.style.gridTemplateColumns=gridCols;
+ L.innerHTML=`<div class="lab"><b>Parallel</b>process</div>
+  <div class="lane" style="grid-column:2 / span ${N}">
+   <div style="font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px">
+     ↻ runs continuously rather than once per journey instance</div>
+   <div class="lanetrack">`+LANE.map(s=>`<div class="lanestep">${s.n}<i>${s.s}</i></div>`).join("")+`</div></div>`;}
+
+/* ---------- experience chart ---------- */
+{const A=$("axis"), W=186+46*N, H=330, mid=H/2;
+ $("expinner").style.width=W+"px";
+ let html=`<div class="zero"></div><div class="yline"></div>
+   <div class="ytag up" style="top:-4px">↑ positive</div>
+   <div class="ytag dn" style="bottom:-4px">↓ negative</div>`;
+ stageSpans.forEach((s,k)=>{const x=186+46*(s.i+s.len);html+=`<div class="grid" style="left:${x}px"></div>`;
+   if(k%2===0)html+=`<div class="xband" style="left:${186+46*s.i}px;width:${46*s.len}px"></div>`;});
+ CP.forEach((c,i)=>{
+   if(c.s===null)return;
+   const x=186+46*i+23, y=mid-(c.s/2)*(mid-34);
+   html+=`<div class="epoint ${c.s>0?"pos":c.s<0?"neg":""} ${c.th?"themed":""}" data-i="${i}" style="left:${x}px;top:${y}px"><span>${i+1}</span></div>`;
+ });
+ A.innerHTML=html;}
+
+/* ---------- evidence panel ---------- */
+{$("items").innerHTML=CP.map((c,i)=>{
+  const cites=[...new Set(c.q.map(q=>q[0]))].join(", ");
+  const meta=c.th
+    ? `<span class="meta">${c.th} · n=${c.n}</span>`
+    : c.obs
+    ? `<span class="meta">Researcher observation</span>`
+    : `<span class="meta">${c.n} mention${c.n===1?"":"s"}${cites?" · "+cites:""}</span>`;
+  const note=c.note?`<p class="pend" style="font-style:normal;margin:0 0 10px">${c.note}</p>`:"";
+  const body=note+(c.q.length
+    ? c.q.map(q=>`<div class="q">"${q[2]}"<cite>${q[0]} · ${q[1]}</cite></div>`).join("")
+    : `<p class="pend">${c.struct
+        ? "Structural step. No participant describes it."
+        : c.obs
+        ? "Researcher observation. Not in the transcript, so no verbatim exists."
+        : "Quotes pending."}</p>`);
+  const val=c.s===null?"·":(c.s>0?"+"+c.s:c.s);
+  return `<div class="item" data-i="${i}">
+    <div class="ihead"><span class="sign">+</span><span class="num">${i+1}</span>
+      <span class="nm">${c.t}</span><span class="val ${c.s>0?"pos":c.s<0?"neg":""}">${val}</span></div>
+    <div class="ibody">${meta}${body}</div></div>`;}).join("");}
+
+/* ---------- interaction ---------- */
+const tip=$("tip");
+function hi(i,scroll){
+  document.querySelectorAll(".epoint,.item,.poc .dot").forEach(e=>e.classList.remove("on"));
+  const p=document.querySelector(`.epoint[data-i="${i}"]`), it=document.querySelector(`.item[data-i="${i}"]`),
+        d=document.querySelector(`.poc .dot[data-i="${i}"]`);
+  if(p)p.classList.add("on"); if(d)d.classList.add("on"); if(!it)return;
+  it.classList.add("on","open"); it.querySelector(".sign").textContent="−";
+  if(scroll)it.scrollIntoView({behavior:"smooth",block:"center"});
+}
+document.addEventListener("click",e=>{
+  const pt=e.target.closest(".epoint, .poc .dot");
+  if(pt){hi(+pt.dataset.i,true);return;}
+  const h=e.target.closest(".ihead");
+  if(h){const it=h.parentElement, open=it.classList.toggle("open");
+    h.querySelector(".sign").textContent=open?"−":"+";
+    if(open)hi(+it.dataset.i,false); return;}
+});
+document.addEventListener("mouseover",e=>{
+  const pt=e.target.closest(".epoint, .poc .dot"); if(!pt)return;
+  const c=CP[+pt.dataset.i];
+  tip.innerHTML=`<b>${+pt.dataset.i+1}</b>${c.t}`;
+  tip.style.opacity=1;
+});
+document.addEventListener("mousemove",e=>{
+  if(tip.style.opacity!=="1")return;
+  tip.style.left=Math.min(e.clientX+14,innerWidth-262)+"px";
+  tip.style.top=(e.clientY+16)+"px";
+});
+document.addEventListener("mouseout",e=>{if(e.target.closest(".epoint, .poc .dot"))tip.style.opacity=0;});
+
+/* ---------- role isolation ---------- */
+{const bar=$("rolebar");
+ const counts={};ROLES.forEach(r=>counts[r.k]=CP.filter(c=>c.r.includes(r.k)).length);
+ bar.innerHTML+=ROLES.map(r=>`<button data-role="${r.k}">${r.n} <span style="opacity:.6">${counts[r.k]}</span></button>`).join("")
+   +`<button class="clear" data-role="">All roles</button><span class="cnt-note" id="isonote"></span>`;
+
+ const M=$("L-tool");
+ let isoline=null;
+ function apply(role){
+   const on=!!role;
+   document.body.classList.toggle("iso",on);
+   const keep=i=>!on||CP[i].r.includes(role);
+
+   document.querySelectorAll(".poc .cell").forEach(el=>el.classList.toggle("off",!keep(+el.dataset.i)));
+   $("L-tool").querySelectorAll(".mcell").forEach(el=>el.classList.toggle("off",!keep(+el.dataset.i)));
+   $("L-tool").querySelectorAll(".mrow").forEach(row=>{
+     const used=on&&![...row.querySelectorAll(".mcell")].some(c=>c.querySelector(".mdot")&&keep(+c.dataset.i));
+     row.classList.toggle("off",used);});
+   $("L-role").querySelectorAll(".mrow").forEach(row=>row.classList.toggle("off",on&&row.dataset.role!==role));
+   document.querySelectorAll(".epoint").forEach(el=>el.classList.toggle("off",!keep(+el.dataset.i)));
+   document.querySelectorAll(".item").forEach(el=>el.classList.toggle("off",!keep(+el.dataset.i)));
+
+   /* tool trace for the isolated role only */
+   if(isoline){isoline.remove();isoline=null;}
+   if(on){
+     const pts=[];CP.forEach((c,i)=>{if(!keep(i))return;c.tl.forEach(tk=>{
+       const r=TOOLS.findIndex(t=>t.k===tk);if(r>=0)pts.push([i,r]);});});
+     if(pts.length>1){
+       const svg=M.querySelector(".trace");
+       isoline=document.createElementNS("http://www.w3.org/2000/svg","polyline");
+       isoline.setAttribute("class","isoline");isoline.setAttribute("fill","none");
+       isoline.setAttribute("points",pts.map(([i,r])=>`${186+46*i+23},${19*r+9.5}`).join(" "));
+       svg.appendChild(isoline);}
+   }
+   /* counters follow the isolation */
+   const cf=on?(c=>c.r.includes(role)):(()=>true);
+   const seg=k=>{const sp=stageSpans[k];return CP.slice(sp.i,sp.i+sp.len).filter(cf);};
+   $("L-poccount").querySelectorAll(".cnt b").forEach((b,k)=>{b.textContent=seg(k).length;});
+   $("L-toolcount").querySelectorAll(".cnt b").forEach((b,k)=>{b.textContent=swCount(seg(k));});
+   $("L-rolecount").querySelectorAll(".cnt b").forEach((b,k)=>{
+     b.textContent=seg(k).reduce((a,c)=>a+(on?1:c.r.length),0);});
+   const all=CP.filter(cf);
+   $("tot-poc").textContent=all.length;
+   $("tot-tool").textContent=swCount(all);
+   $("tot-role").textContent=all.reduce((a,c)=>a+(on?1:c.r.length),0);
+
+   bar.querySelectorAll("button").forEach(b=>b.classList.toggle("sel",b.dataset.role===(role||"")&&on===!!b.dataset.role));
+   const ro=ROLES.find(r=>r.k===role);
+   $("isonote").textContent=on?`${counts[role]} of ${CP.length} points of contact involve ${ro.n}.`:"";
+ }
+ bar.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+   const r=b.dataset.role;apply(r&&!b.classList.contains("sel")?r:"");});
+}
+
+/* keep the layer canvas and the experience chart horizontally in step */
+{const a=$("scroller"), b=$("expchart"); let lock=false;
+ const sync=(from,to)=>{if(lock)return;lock=true;to.scrollLeft=from.scrollLeft;requestAnimationFrame(()=>lock=false);};
+ a.addEventListener("scroll",()=>sync(a,b)); b.addEventListener("scroll",()=>sync(b,a));}
+</script>
+</body>
+</html>

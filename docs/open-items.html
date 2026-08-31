@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Open Items — Research Engine</title>
+<title>Open Items · Research Engine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -140,7 +140,7 @@
   <p class="lede">Everything left hanging from the synthesis-hardening pass, derived from
   <code>evals/observed-failure-modes.md</code>, <code>evals/run-log.md</code> and the current tree.
   Mark each <b>done</b>, <b>not required</b>, or leave it open with notes. State is saved in this
-  browser; hit <b>Copy for Claude</b> at the end of the day and paste it back into the session.</p>
+  browser. Hit <b>Copy for Claude</b> at the end of the day and paste it back into the session.</p>
 
   <div class="toolbar">
     <div class="counts">
@@ -159,18 +159,18 @@
   <section data-group="Governance &amp; rubric changes not yet applied">
     <div class="ghead"><span class="gid">A</span><h2>Proposed changes never applied</h2></div>
     <p class="gnote">The 2026-08-12 pass applied most of the synthesis proposals. These are the ones the
-    status section explicitly lists as <b>NOT YET APPLIED</b>. A1–A3 are the whole PII block — none of it
-    landed.</p>
+    status section explicitly lists as <b>NOT YET APPLIED</b>. A1–A3 are the whole PII block, and none of
+    it landed.</p>
 
     <div class="item" data-id="A1">
       <div class="row">
         <span class="idtag">A1</span>
         <div class="body">
           <p class="title">Add the phonetic-variant redaction pass to <code>governance/pii-handling.md</code></p>
-          <p class="why">Exact-name replacement misses auto-transcription's phonetic variants. The procedure that
-          converged: build the variant list <i>before</i> pass 1, replace known names, scan rare capitalized
-          bigrams, scan low-frequency capitalized single tokens, re-scan after reading each transcript.
-          Took 7 successive passes without it.</p>
+          <p class="why">Exact-name replacement misses auto-transcription's phonetic variants. The procedure
+          that converged builds the variant list <i>before</i> pass 1, replaces known names, scans rare
+          capitalized bigrams, scans low-frequency capitalized single tokens, and re-scans after reading each
+          transcript. Took 7 successive passes without it.</p>
           <div class="tags"><span class="tag t-fm">FM-11 · 7×</span><span class="tag t-file">governance/pii-handling.md</span></div>
         </div>
         <div class="actions"></div>
@@ -182,9 +182,9 @@
         <span class="idtag">A2</span>
         <div class="body">
           <p class="title">Add the over-redaction review step to <code>governance/pii-handling.md</code></p>
-          <p class="why">After redaction, review replacements for non-person tokens — technical terms, product
-          names, place names. A term of art matching a person-name pattern got redacted and corrupted the
-          analysis.</p>
+          <p class="why">After redaction, review replacements for non-person tokens such as technical terms,
+          product names, and place names. A term of art matching a person-name pattern got redacted and
+          corrupted the analysis.</p>
           <div class="tags"><span class="tag t-fm">FM-10</span><span class="tag t-file">governance/pii-handling.md</span></div>
         </div>
         <div class="actions"></div>
@@ -195,7 +195,7 @@
       <div class="row">
         <span class="idtag">A3</span>
         <div class="body">
-          <p class="title">Restate the PII guarantee at the boundary it can actually hold</p>
+          <p class="title">Restate the PII guarantee at the boundary it can hold</p>
           <p class="why">Full redaction of free-text colleague mentions is not reliably achievable, so the doc
           shouldn't promise it. The enforceable guarantee is that only <code>Pnn</code>/<code>[Cnn]</code> codes
           reach a deliverable. Worth deciding whether this weakens a claim someone is relying on.</p>
@@ -209,10 +209,10 @@
       <div class="row">
         <span class="idtag">A4</span>
         <div class="body">
-          <p class="title">Decide: evidence-type labelling as its own rubric criterion, or leave it folded in</p>
+          <p class="title">Decide whether evidence-type labelling becomes its own rubric criterion or stays folded in</p>
           <p class="why">Proposed as a separate criterion. It landed <i>inside</i> criterion 2 and inside Step 3 of
-          the skill instead. Folded-in means it shares criterion 2's verdict and can be masked by it; separate
-          means the judge must score it explicitly. This is a judgment call, not an oversight to fix.</p>
+          the skill instead. Folded-in means it shares criterion 2's verdict and can be masked by it. Separate
+          means the judge must score it explicitly. This is a judgment call rather than an oversight to fix.</p>
           <div class="tags"><span class="tag t-fm">FM-5</span><span class="tag t-decide">decision</span><span class="tag t-file">rubrics/synthesis.md</span></div>
         </div>
         <div class="actions"></div>
@@ -225,8 +225,8 @@
         <div class="body">
           <p class="title">Add a source-layer &amp; speaker-discipline criterion to <code>rubrics/synthesis.md</code></p>
           <p class="why">Verify quotes come from the verbatim layer, and that no moderator speech is attributed to
-          a participant. Currently only implicit in criterion 5 (quote fidelity). Unlike A4 this one did <i>not</i>
-          land anywhere in the rubric — it is a genuine gap.</p>
+          a participant. Currently only implicit in criterion 5 (quote fidelity). Unlike A4, this landed
+          nowhere in the rubric. It is a genuine gap.</p>
           <div class="tags"><span class="tag t-fm">FM-12 / FM-14</span><span class="tag t-file">rubrics/synthesis.md</span></div>
         </div>
         <div class="actions"></div>
@@ -237,10 +237,10 @@
       <div class="row">
         <span class="idtag">A6</span>
         <div class="body">
-          <p class="title">Add Step 1a — source-layer discipline — to the synthesis skill</p>
+          <p class="title">Add Step 1a, source-layer discipline, to the synthesis skill</p>
           <p class="why">Where transcripts come from AI note-takers, identify the verbatim layer and code only from
-          it. Machine-generated summaries, "action items" and "next steps" are the tool's inferences, not
-          participant speech. Verified absent: the skill still runs Step 1 → Step 5 with no 1a.</p>
+          it. Machine-generated summaries, "action items" and "next steps" are the tool's inferences rather than
+          participant speech. Verified absent. The skill still runs Step 1 → Step 5 with no 1a.</p>
           <div class="tags"><span class="tag t-fm">FM-14</span><span class="tag t-file">.claude/skills/research-synthesis/SKILL.md</span></div>
         </div>
         <div class="actions"></div>
@@ -251,10 +251,10 @@
       <div class="row">
         <span class="idtag">A7</span>
         <div class="body">
-          <p class="title">Add Step 2a — speaker discipline — to the synthesis skill</p>
+          <p class="title">Add Step 2a, speaker discipline, to the synthesis skill</p>
           <p class="why">Exclude moderator turns, including the moderator recounting other sessions and proposing
-          solutions. Where a participant merely assents to a moderator-introduced idea, record it as assent, not
-          demand. FM-13 (study-sequence contamination) has no other mitigation anywhere in the repo.</p>
+          solutions. Where a participant merely assents to a moderator-introduced idea, record it as assent rather
+          than demand. FM-13 (study-sequence contamination) has no other mitigation anywhere in the repo.</p>
           <div class="tags"><span class="tag t-fm">FM-12 / FM-13</span><span class="tag t-file">.claude/skills/research-synthesis/SKILL.md</span></div>
         </div>
         <div class="actions"></div>
@@ -265,8 +265,8 @@
   <!-- ================= B ================= -->
   <section data-group="Eval fixtures">
     <div class="ghead"><span class="gid">B</span><h2>Missing eval fixtures</h2></div>
-    <p class="gnote">Nine fixtures were proposed. <code>synthesis-arithmetic</code> consolidated five of them
-    (FM-1, 2, 4, 6, 7 plus the FM-8 disclaimer). These are what's actually left on disk — the tree currently
+    <p class="gnote">The proposal listed nine fixtures. <code>synthesis-arithmetic</code> consolidated five of
+    them (FM-1, 2, 4, 6, 7 plus the FM-8 disclaimer). These are what remains on disk. The tree currently
     holds only <code>guide-clean</code>, <code>guide-leading</code>, <code>synthesis-arithmetic</code>,
     <code>synthesis-overclaimed</code>, <code>synthesis-sound</code>.</p>
 
@@ -274,10 +274,10 @@
       <div class="row">
         <span class="idtag">B1</span>
         <div class="body">
-          <p class="title">Build <code>synthesis-adjacent-evidence</code> — expected FAIL</p>
+          <p class="title">Build <code>synthesis-adjacent-evidence</code>, expected FAIL</p>
           <p class="why">Quote is topically near the theme but supports a different claim. <b>This is the highest-value
-          missing fixture:</b> FM-3 was the second most frequent live failure (5 occurrences, caught in all three
-          judge passes) and nothing in the suite currently tests for it.</p>
+          missing fixture.</b> FM-3 was the second most frequent live failure, with 5 occurrences caught in all
+          three judge passes, and nothing in the suite currently tests for it.</p>
           <div class="tags"><span class="tag t-fm">FM-3 · 5×</span><span class="tag t-file">evals/fixtures/</span></div>
         </div>
         <div class="actions"></div>
@@ -288,8 +288,8 @@
       <div class="row">
         <span class="idtag">B2</span>
         <div class="body">
-          <p class="title">Build <code>synthesis-moderator-quote</code> — expected FAIL</p>
-          <p class="why">A moderator line attributed to a participant. Pairs with A5/A7 — there's little point
+          <p class="title">Build <code>synthesis-moderator-quote</code>, expected FAIL</p>
+          <p class="why">A moderator line attributed to a participant. Pairs with A5/A7. There is little point
           shipping the fixture before the rubric has a criterion that can catch it.</p>
           <div class="tags"><span class="tag t-fm">FM-12</span><span class="tag t-file">evals/fixtures/</span></div>
         </div>
@@ -301,7 +301,7 @@
       <div class="row">
         <span class="idtag">B3</span>
         <div class="body">
-          <p class="title">Build <code>synthesis-summary-layer</code> — expected FAIL</p>
+          <p class="title">Build <code>synthesis-summary-layer</code>, expected FAIL</p>
           <p class="why">Quote drawn from an AI-generated summary layer rather than the verbatim layer. Same
           dependency on A5/A6 as B2.</p>
           <div class="tags"><span class="tag t-fm">FM-14</span><span class="tag t-file">evals/fixtures/</span></div>
@@ -314,7 +314,7 @@
       <div class="row">
         <span class="idtag">B4</span>
         <div class="body">
-          <p class="title">Build <code>synthesis-honest-counts</code> — expected PASS control</p>
+          <p class="title">Build <code>synthesis-honest-counts</code>, expected PASS control</p>
           <p class="why">Compound theme correctly split, every participant cited, evidence types labelled. Without a
           clean control on the new criterion-2 checklist, a judge that fails everything looks identical to a judge
           that works. <code>synthesis-sound</code> was updated for the displayed-evidence rule but doesn't exercise
@@ -330,7 +330,7 @@
         <span class="idtag">B5</span>
         <div class="body">
           <p class="title">Decide whether FM-5 needs a fixture of its own</p>
-          <p class="why">Uniform evidentiary framing over non-uniform evidence — "observed live, not merely
+          <p class="why">Uniform evidentiary framing over non-uniform evidence, meaning "observed live, not merely
           reported" asserted across a set where only part was observed. It appears in the proposed rubric criterion
           but was never given a fixture in the proposed table. Gap, or deliberate?</p>
           <div class="tags"><span class="tag t-fm">FM-5</span><span class="tag t-decide">decision</span></div>
@@ -346,7 +346,7 @@
           <p class="title">Fix the stale count in <code>observed-failure-modes.md</code></p>
           <p class="why">The status section says "the remaining 7 proposed fixtures." Counting against the tree,
           four remain uncreated (B1–B4). Either the number is stale or my mapping of what
-          <code>synthesis-arithmetic</code> covers is wrong — worth reconciling so the doc stays trustworthy.</p>
+          <code>synthesis-arithmetic</code> covers is wrong. Worth reconciling so the doc stays trustworthy.</p>
           <div class="tags"><span class="tag t-verify">verify</span><span class="tag t-file">evals/observed-failure-modes.md</span></div>
         </div>
         <div class="actions"></div>
@@ -380,9 +380,9 @@
         <div class="body">
           <p class="title">Prove judge-depth stability under the <code>verdict|score|untraced</code> comparator</p>
           <p class="why"><b>The most load-bearing unknown here.</b> The old verdict-only comparator couldn't detect
-          the observed pathology — across three live passes the verdict stayed NEEDS-WORK while the score moved
+          the observed pathology. Across three live passes the verdict stayed NEEDS-WORK while the score moved
           2/5 → 4/5 → 3/5. If depth still varies between invocations, scores aren't comparable and the gate can
-          terminate on a lucky shallow pass. Stability is currently <i>unproven</i>, not established.</p>
+          terminate on a lucky shallow pass. Stability is currently <i>unproven</i>.</p>
           <div class="tags"><span class="tag t-verify">verify</span><span class="tag t-file">evals/run-evals.sh</span></div>
         </div>
         <div class="actions"></div>
@@ -394,8 +394,8 @@
         <span class="idtag">C3</span>
         <div class="body">
           <p class="title">Close the <code>guide-clean</code> escalation with a captured criterion-FAIL count</p>
-          <p class="why">The 2026-08-12 run recorded NEEDS-WORK with the FAIL count "not captured" — which is exactly
-          what made it unresolvable, and exactly what the new harness fixes. The manual investigation returned PASS
+          <p class="why">The 2026-08-12 run recorded NEEDS-WORK with the FAIL count "not captured." That is exactly
+          what made it unresolvable and exactly what the new harness fixes. The manual investigation returned PASS
           4/5 with 0 FAILs, so it should now be accepted as warn-level. Confirm that under C1 and close it out.</p>
           <div class="tags"><span class="tag t-verify">verify</span><span class="tag t-file">evals/run-log.md</span></div>
         </div>
@@ -408,10 +408,11 @@
         <span class="idtag">C4</span>
         <div class="body">
           <p class="title">Apply or reject the <code>guide-clean</code> line 12 rewording</p>
-          <p class="why">Line 12 — <i>"Tell me about a time a checkout didn't go the way you expected."</i> —
+          <p class="why">Line 12, <i>"Tell me about a time a checkout didn't go the way you expected,"</i>
           presupposes a negative incident with no escape hatch, and is inconsistent with line 10 in the same fixture,
-          which does hedge. Suggested fix, not applied: <i>"Was there ever a time a checkout didn't go the way you
-          expected? If so, walk me through it."</i> Note that changing a fixture changes what the suite measures.</p>
+          which does hedge. The suggested fix, still unapplied, reads <i>"Was there ever a time a checkout didn't go
+          the way you expected? If so, walk me through it."</i> Note that changing a fixture changes what the suite
+          measures.</p>
           <div class="tags"><span class="tag t-decide">decision</span><span class="tag t-file">evals/fixtures/guide-clean.md</span></div>
         </div>
         <div class="actions"></div>
@@ -424,8 +425,8 @@
         <div class="body">
           <p class="title">Watch for the judge confabulating rubric provisions again</p>
           <p class="why">In the investigation the judge cited a PASS threshold that no rubric contained. The
-          mitigation — an explicit "What counts as acceptable" section in all four rubrics — is applied but
-          unverified. Next run, check whether the judge's justifications now cite text that actually exists.</p>
+          mitigation, an explicit "What counts as acceptable" section in all four rubrics, is applied but
+          unverified. Next run, check whether the judge's justifications now cite text that exists.</p>
           <div class="tags"><span class="tag t-verify">verify</span><span class="tag t-file">rubrics/</span></div>
         </div>
         <div class="actions"></div>
@@ -444,7 +445,7 @@
         <div class="body">
           <p class="title">Wire <code>docs/design-baseline.md</code> into <code>CLAUDE.md</code></p>
           <p class="why">It opens with "<i>standing rule: every HTML artifact produced in this repo uses this
-          palette and type system</i>" — but nothing in the repo references it. Grep across all
+          palette and type system</i>," yet nothing in the repo references it. Grep across all
           <code>.md</code>/<code>.sh</code> returns zero hits outside the file itself, so a fresh session won't
           find it unless it happens to read <code>docs/</code>.</p>
           <div class="tags"><span class="tag t-file">CLAUDE.md</span></div>
@@ -473,7 +474,7 @@
         <div class="body">
           <p class="title">Update the status section of <code>observed-failure-modes.md</code> as items land</p>
           <p class="why">The APPLIED / NOT YET APPLIED split is the only index of what's real. If A1–A7 get done
-          without updating it, the doc starts lying — and it's the artifact a future session will trust first.</p>
+          without updating it, the doc starts lying, and it is the artifact a future session will trust first.</p>
           <div class="tags"><span class="tag t-file">evals/observed-failure-modes.md</span></div>
         </div>
         <div class="actions"></div>
@@ -482,7 +483,7 @@
   </section>
 
   <footer>
-    Saved locally in this browser via <code>localStorage</code> — no network, nothing leaves this machine.
+    Saved locally in this browser via <code>localStorage</code>. No network, nothing leaves this machine.
     File lives at <code>docs/open-items.html</code>.
   </footer>
 </div>
@@ -592,7 +593,7 @@
 
   document.getElementById("copy").addEventListener("click", function(){
     var btn = this;
-    var out = ["# Open items — end-of-day status", ""];
+    var out = ["# Open items, end-of-day status", ""];
     var stamp = new Date().toISOString().slice(0,10);
     out.push("Updated " + stamp + ". Statuses and notes set by Gwenyvere in `docs/open-items.html`.", "");
 
