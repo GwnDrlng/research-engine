@@ -223,15 +223,29 @@ body.iso .epoint.off:hover{opacity:.5}
 body.iso .trace polyline{opacity:.12}
 .cell,.mcell,.mrow,.item,.epoint{transition:opacity .15s}
 .trace polyline.isoline{stroke:var(--hero);stroke-width:1.8;opacity:.9}
+/* ---- study view toggle (matches the personas page) ---- */
+.viewbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 12px}
+.viewbar .eyebrow{margin:0}
+.top-tabs{display:flex;align-items:center;height:44px;padding:4px;background:#f8f8f8;border:1px solid #e5e7eb;border-radius:8px}
+.top-tab{display:flex;align-items:center;justify-content:center;width:160px;height:100%;padding:8px;border-radius:8px;
+  font-size:14px;font-weight:500;line-height:20px;color:#111827;text-decoration:none}
+.top-tab[aria-current="page"]{background:#fff;color:#030712;box-shadow:0 1px 1.5px rgba(0,0,0,.1),0 1px 1px rgba(0,0,0,.1)}
+.top-tab:not([aria-current="page"]):hover{background:rgba(0,0,0,.03)}
+.top-tab:focus-visible{outline:2px solid var(--hero);outline-offset:2px}
+@media (max-width:560px){.top-tabs{width:100%}.top-tab{flex:1 1 0;width:auto}}
 </style>
 </head>
 <body>
 
 <div class="pad">
-  <p class="eyebrow">Research Engine · Journey layers · Synthetic demo</p>
+  <header class="viewbar">
+    <p class="eyebrow">Research Engine · Journey layers · Synthetic demo</p>
+    <nav class="top-tabs" aria-label="Study views">
+      <a class="top-tab" href="personas-example.html">Personas</a>
+      <a class="top-tab" href="journey-layers-example.html" aria-current="page">User Journey</a>
+    </nav>
+  </header>
   <h1>Checkout drop-off <b>layers</b></h1>
-  <p class="lede">Read top to bottom: what stage the shopper is in, what happens, every action someone
-  takes, which tool that action happens in, who does it, how long it takes, and how it feels.</p>
 
   <div class="legend">
     <span><i class="k solid"></i>Themed · a synthesis finding (3+ participants)</span>
