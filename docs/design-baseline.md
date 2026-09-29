@@ -5,6 +5,14 @@ internal docs) uses this palette and type system as its visual baseline**, not a
 invented one. Extracted 2026-08-12 from `https://www.fluxon.com/our-work` via computed styles
 (not eyeballed from screenshots) — re-verify against the live site if it redesigns.
 
+## Exception: persona deliverables
+
+**Every persona deliverable uses the personas overview design in
+`templates/personas-overview.html`** (demo: `docs/personas-example.html`), not the baseline below.
+That design has its own tokens: Fraunces for display type, Geist for body, Fira Code for mono,
+a light `#f8f8f8` canvas with white cards, and a teal `#33797b` active state. Copy the template
+rather than restyling personas per study. The "no serif" rule below does not apply to personas.
+
 ## Core tokens
 
 | Token | Value | Source |

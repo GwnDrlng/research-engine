@@ -24,6 +24,11 @@ Generate parallel versions from the identical evidence:
 - **Leadership** — 5-slide outline.
 Depth changes; the underlying evidence does not.
 
+**Personas.** When the study calls for personas, build them from
+`templates/personas-overview.html` (copied into `projects/<study-slug>/`), the standard persona
+design. Every bullet carries an `n of N` participant count, and a persona backed by fewer than 3
+participants is labeled a hypothesis. See `docs/personas-example.html` for a filled-in demo.
+
 ## Step 3 — Skeptic's pass (required)
 Have yourself argue **against** each insight: which findings are overclaimed, which expensive
 recommendations rest on thin support, where certainty is overstated. Fold the honest ones back in.

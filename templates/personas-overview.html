@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Study] · Personas</title>
+<!--
+  TEMPLATE · Personas overview
+  ============================
+  The standard design for every persona deliverable in this repo: a sticky
+  sidebar with a quick nav per persona and a Research methodology view, and one
+  card per persona with a portrait, traits, an attribute table, and tabbed
+  Goals / Motivations / Day-to-Day / Frustrations with an "n of N" source count
+  on every bullet. Responsive: stacked on mobile, 1/3 + 2/3 split from 1100px.
+  See docs/personas-example.html for a filled-in synthetic version.
+
+  This is a SCAFFOLD, not a finished deliverable. Per CLAUDE.md:
+    - Real study data belongs only in projects/<study-slug>/ (gitignored). Copy
+      this file there first; never fill it in place inside templates/.
+    - Cite participants as P1..Pn. No names, employers, or other PII.
+    - A persona backed by fewer than 3 participants is a hypothesis, not a
+      finding (CLAUDE.md rule 5). Say so in "Persona status".
+    - "n of N" on each bullet: n = participants behind this persona who support
+      the point, N = participants behind this persona. Never pad either number.
+    - Names, portraits, and the attribute table are illustrative and invented.
+      Keep the "Illustrative details" caveat. Never use a photo of a participant.
+
+  HOW TO FILL THIS IN
+  --------------------
+  - One .nav-row and one .persona-card per persona; keep their ids in sync
+    (href="#persona-x", data-target="persona-x", id="persona-x").
+  - Tab ids follow <persona>-tab-<section> and panels <persona>-<section>.
+  - Portrait: the .photo--placeholder block shows an initial. To use an
+    illustrative image instead, replace it with
+      <div class="photo"><img src="assets/persona-x.jpg" alt="Illustrative portrait for the X persona"></div>
+  - The top tabs link this page to the study's journey layers page; update the
+    hrefs to match the filenames in your project folder.
+  - The script at the bottom drives the tabs, the methodology view, and the
+    quick-nav highlight. It should not need edits.
+  - Design: this look (Fraunces / Geist / Fira Code, teal active state) is the
+    persona standard. Don't restyle it per study; see docs/design-baseline.md.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,100..900,0..100,0..1&family=Geist:wght@400;500&family=Fira+Code:wght@400&display=swap">
+<style>
+  /* Persona design baseline. Personas use this look (Fraunces / Geist / Fira Code,
+     teal active state) rather than the house baseline; see docs/design-baseline.md. */
+  :root {
+    --bg: #f8f8f8;
+    --surface: #ffffff;
+    --heading: #1a1c1e;
+    --foreground: #111827;
+    --popover-foreground: #030712;
+    --muted: #4b5563;
+    --subtle: #6b7280;
+    --label: #73777f;
+    --border: #e5e7eb;
+    --divider: #dde2ec;
+    --accent-surface: #f3f4f6;
+    --active: #33797b;
+    --active-soft: #e7f2f1;
+    --inactive-avatar: #ededed;
+    --inactive-avatar-ink: #5e5e5e;
+    --shadow-sm: 0 1px 1.5px rgba(0,0,0,0.1), 0 1px 1px rgba(0,0,0,0.1);
+    --shadow-panel: 0 4px 6px rgba(0,0,0,0.03);
+    --font-display: "Fraunces", Georgia, serif;
+    --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "Fira Code", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, p { margin: 0; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  a { color: inherit; }
+  img { display: block; }
+
+  .display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-variation-settings: "SOFT" 0, "WONK" 1;
+  }
+  .supersoft {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-variation-settings: "opsz" 72, "SOFT" 100, "WONK" 0;
+  }
+  .eyebrow {
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.44px;
+    text-transform: uppercase;
+    color: var(--label);
+    line-height: normal;
+  }
+
+  /* ---------- Page ---------- */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 32px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  /* ---------- Breadcrumb + top tabs ---------- */
+  .breadcrumb {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .study-label {
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.48px;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: normal;
+  }
+  .top-tabs {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .top-tab {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--foreground);
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .top-tab[aria-current="page"] {
+    background: var(--surface);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-sm);
+  }
+  .top-tab:not([aria-current="page"]):hover { background: rgba(0,0,0,0.03); }
+
+  /* ---------- Main split ---------- */
+  .split {
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar, .content { display: contents; }
+
+  .sidebar-top { order: 1; display: flex; flex-direction: column; gap: 32px; margin-bottom: 32px; }
+  .view-personas { order: 2; margin-bottom: 32px; }
+  .method-trigger { order: 3; }
+  .view-method { order: 4; }
+  .footer { order: 5; margin-top: 24px; }
+
+  h1.title {
+    font-size: 36px;
+    line-height: 1.15;
+    color: var(--heading);
+    max-width: 340px;
+  }
+
+  /* Quick nav rows */
+  .quick-nav { display: flex; flex-direction: column; gap: 12px; }
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+  .nav-row:hover { border-color: #c9ced6; }
+  .nav-row:focus-visible { outline: 2px solid var(--active); outline-offset: 2px; }
+  .nav-avatar {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--inactive-avatar);
+    color: var(--inactive-avatar-ink);
+    font-size: 20px;
+    line-height: normal;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-text { display: flex; flex-direction: column; gap: 4px; line-height: normal; }
+  .nav-name { font-size: 18px; color: var(--muted); transition: color 0.15s; }
+  .nav-row.is-active { border-color: var(--active); }
+  .nav-row.is-active .nav-avatar { background: var(--active-soft); color: var(--active); }
+  .nav-row.is-active .nav-name { color: var(--foreground); }
+
+  /* Research methodology trigger */
+  .method-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: normal;
+    color: var(--foreground);
+    text-align: left;
+  }
+  .method-trigger:focus-visible { outline: 2px solid var(--active); outline-offset: 2px; }
+  .method-trigger .chev { width: 24px; height: 24px; flex: none; }
+  .chev-right, .chev-right-active { display: none; }
+  .chev-down { transition: transform 0.2s; }
+  .page.method-open .method-trigger { border-radius: 8px 8px 0 0; }
+  .page.method-open .chev-down { transform: rotate(180deg); }
+
+  /* ---------- Persona cards ---------- */
+  .view-personas { display: flex; flex-direction: column; gap: 16px; }
+  .persona-card {
+    container-type: inline-size;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    scroll-margin-top: 32px;
+  }
+  .card-inner { display: flex; flex-direction: column; gap: 32px; }
+  .card-top { display: flex; flex-direction: column; gap: 24px; }
+  .card-header { display: flex; flex-direction: column; gap: 32px; }
+  .photo {
+    position: relative;
+    width: 100%;
+    height: 299px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex: none;
+  }
+  .photo img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-body { display: flex; flex-direction: column; gap: 36px; min-width: 0; }
+  .name-block { display: flex; flex-direction: column; gap: 4px; }
+  .persona-name { font-size: 32px; color: var(--heading); line-height: normal; }
+  .tags-desc { display: flex; flex-direction: column; gap: 12px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: var(--accent-surface);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+    color: var(--muted);
+  }
+  .description { font-size: 18px; line-height: 24px; color: var(--muted); }
+
+  /* Table lines. Real borders (never gaps): browsers round a sub-pixel border
+     up to one device pixel, whereas a 0.33px gap can round down to nothing.
+     Each cell draws only its right and bottom edge; the inner grid overhangs
+     the frame by 1px so the last column/row edges are clipped away and the
+     frame's own border is the only outer line. */
+  .table-frame {
+    border: 0.33px solid var(--muted);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .attrs {
+    display: grid;
+    grid-template-columns: 90px 90px minmax(0, 1fr);
+    margin: 0 -1px -1px 0;
+  }
+  .attr {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    border-right: 0.33px solid var(--muted);
+    border-bottom: 0.33px solid var(--muted);
+    font-weight: 500;
+    line-height: normal;
+    min-width: 0;
+  }
+  .attr dt {
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--subtle);
+  }
+  .attr dd { margin: 0; font-size: 14px; color: var(--muted); }
+  .attr-gender { order: 1; }
+  .attr-age { order: 2; }
+  .attr-location { order: 3; }
+  .attr-education { order: 4; grid-column: 1 / -1; }
+  .attr-job { order: 5; grid-column: 1 / -1; }
+  .attr-setup { order: 6; grid-column: 1 / -1; }
+  .attr-experience { order: 7; grid-column: 1 / -1; }
+
+  /* Persona section tabs */
+  .persona-tabs { display: flex; flex-direction: column; gap: 16px; }
+  .tablist-wrap { position: relative; }
+  .tablist-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 86px;
+    height: 32px;
+    background: linear-gradient(to left, #ffffff 15%, rgba(255,255,255,0));
+    pointer-events: none;
+  }
+  /* Divider drawn as an inset shadow (not a border) so it occupies the same
+     bottom pixel row as the tab underlines, which then paint over it. */
+  .tablist {
+    display: flex;
+    gap: 32px;
+    box-shadow: inset 0 -1px 0 var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tablist::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: none;
+    padding-bottom: 12px;
+    font-size: 18px;
+    letter-spacing: 0.36px;
+    line-height: normal;
+    color: var(--muted);
+    text-align: left;
+    white-space: nowrap;
+  }
+  .tab { transition: color 0.15s, box-shadow 0.15s; }
+  .tab:hover { color: var(--foreground); box-shadow: inset 0 -1px 0 #c4cad6; }
+  .tab[aria-selected="true"],
+  .tab[aria-selected="true"]:hover {
+    color: var(--foreground);
+    box-shadow: inset 0 -1px 0 var(--foreground);
+  }
+  .tab:focus-visible { outline: 2px solid var(--active); outline-offset: 2px; border-radius: 2px; }
+
+  .bullets { display: flex; flex-direction: column; }
+  .bullet {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 0;
+  }
+  .bullet-content { display: flex; gap: 8px; flex: 1 1 auto; min-width: 0; }
+  .bullet-dot { color: var(--foreground); opacity: 0.6; line-height: normal; flex: none; }
+  .bullet-text { font-size: 16px; line-height: 24px; color: var(--muted); max-width: 551px; }
+  .source {
+    flex: none;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--accent-surface);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* Desktop card layout, driven by the card's own width */
+  @container (min-width: 640px) {
+    .card-header { flex-direction: row; align-items: stretch; gap: 32px; }
+    .photo { width: 220px; height: auto; min-height: 299px; }
+    .description { font-size: 20px; line-height: 26px; }
+    .attrs { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .attr-gender, .attr-age, .attr-location, .attr-education { grid-column: span 3; }
+    .attr-job, .attr-experience, .attr-setup { grid-column: span 4; }
+    .attr-job { order: 5; }
+    .attr-experience { order: 6; }
+    .attr-setup { order: 7; }
+    .tablist-wrap::after { display: none; }
+    .tablist { overflow: visible; }
+    .tab { flex: 1 1 0; }
+    .bullet { gap: 24px; }
+  }
+
+  /* ---------- Research methodology panel ---------- */
+  .view-method[hidden] { display: none !important; }
+  .method-panel {
+    background: var(--surface);
+    box-shadow: var(--shadow-panel);
+    border-radius: 0 0 12px 12px;
+    padding: 24px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .method-title { font-size: 28px; line-height: normal; color: var(--heading); }
+  .method-body { display: flex; flex-direction: column; gap: 32px; }
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -1px -1px 0;
+  }
+  .stat {
+    flex: 1 1 0;
+    min-width: 150px;
+    padding: 12px;
+    border-right: 0.33px solid var(--muted);
+    border-bottom: 0.33px solid var(--muted);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    line-height: normal;
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-variation-settings: "SOFT" 0, "WONK" 1;
+    font-size: 28px;
+    color: var(--heading);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-label { font-weight: 500; font-size: 12px; color: var(--label); }
+  .method-text { display: flex; flex-direction: column; gap: 22px; font-size: 18px; line-height: 22px; color: var(--muted); }
+
+  /* Caveats (collapsed, carried over from the previous version) */
+  .caveats { border-top: 1px solid var(--border); padding-top: 20px; }
+  .caveats > summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.44px;
+    text-transform: uppercase;
+    color: var(--label);
+    user-select: none;
+  }
+  .caveats > summary::-webkit-details-marker { display: none; }
+  .caveats > summary::before { content: "▸"; font-size: 10px; transition: transform 0.15s; }
+  .caveats[open] > summary::before { transform: rotate(90deg); }
+  .caveats > summary:hover, .caveats > summary:focus-visible { color: var(--foreground); }
+  .caveats-body { display: flex; flex-direction: column; gap: 20px; margin-top: 18px; }
+  .caveat-group h3 {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--subtle);
+    margin-bottom: 6px;
+  }
+  .caveat-group p, .caveat-group li { font-size: 14px; line-height: 21px; color: var(--muted); }
+  .caveat-group ul { display: flex; flex-direction: column; gap: 6px; padding-left: 16px; list-style: disc; }
+  .caveat-group strong { color: var(--foreground); font-weight: 500; }
+  .caveat-group code { font-family: var(--font-mono); font-size: 12px; }
+
+  /* ---------- Footer ---------- */
+  .footer { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; color: var(--label); }
+  .footer p:first-child { font-size: 12px; line-height: 1.5; }
+  .footer .mono { font-family: var(--font-mono); font-size: 11px; line-height: normal; }
+
+  /* ---------- Tooltips ---------- */
+  .tip-term {
+    position: relative;
+    cursor: help;
+    text-decoration: underline;
+    text-decoration-color: #c4cad6;
+    text-underline-offset: 3px;
+  }
+  .tip-term:hover, .tip-term:focus-visible { text-decoration-color: var(--foreground); outline: none; }
+  .tip-bubble {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 9px);
+    width: 272px;
+    white-space: normal;
+    background: var(--foreground);
+    color: #f8f8f8;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 12.5px;
+    line-height: 1.55;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 11px 13px;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(17,24,39,0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity .15s, transform .15s;
+    pointer-events: none;
+    z-index: 20;
+  }
+  .tip-term:hover .tip-bubble, .tip-term:focus-visible .tip-bubble {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  /* ---------- Desktop split (1/3 sidebar, 2/3 content) ---------- */
+  @media (min-width: 1100px) {
+    .page { padding: 64px 80px; }
+    .breadcrumb { flex-direction: row; align-items: center; justify-content: space-between; }
+    .top-tabs { width: auto; }
+    .top-tab { flex: none; width: 197px; }
+
+    .split {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 48px;
+      align-items: start;
+      max-width: 1280px;
+    }
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 32px;
+      min-height: min(724px, calc(100vh - 64px));
+    }
+    .content { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .sidebar-top, .view-personas, .method-trigger, .view-method, .footer { order: 0; margin: 0; }
+
+    h1.title { font-size: 48px; }
+
+    .method-trigger {
+      background: transparent;
+      border-top: 1px solid var(--divider);
+      border-radius: 0;
+      color: var(--muted);
+    }
+    .chev-down { display: none; }
+    .chev-right { display: block; }
+    body[data-view="method"] .method-trigger {
+      background: var(--surface);
+      border-top-color: transparent;
+      border-radius: 8px;
+      color: var(--foreground);
+    }
+    body[data-view="method"] .chev-right { display: none; }
+    body[data-view="method"] .chev-right-active { display: block; }
+
+    body[data-view="method"] .view-personas { display: none; }
+    body[data-view="method"] .content { gap: 40px; }
+
+    .method-panel { border-radius: 12px; padding: 40px 32px; }
+    .method-title { font-size: 32px; }
+    .stat-num { font-size: 32px; }
+    .method-text { font-size: 20px; line-height: 25px; gap: 25px; }
+
+    .persona-card { padding: 40px 40px 48px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+  /* ---------- Additions for the Research Engine versions ---------- */
+  .chev { color: var(--muted); }
+  .chev-right-active { color: var(--active); }
+  .photo--placeholder {
+    background: linear-gradient(160deg, var(--active-soft) 0%, var(--accent-surface) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .photo-initial { font-size: 96px; line-height: 1; color: var(--active); }
+  .photo--placeholder .eyebrow { color: var(--subtle); }
+  .banner {
+    background: var(--surface);
+    border: 1px dashed var(--active);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 21px;
+    color: var(--muted);
+  }
+  .banner strong { color: var(--foreground); font-weight: 500; }
+  .banner code { font-family: var(--font-mono); font-size: 12px; }
+</style>
+</head>
+<body data-view="personas">
+
+<div class="page" id="page">
+
+  <header class="breadcrumb">
+    <p class="study-label">[Study name]</p>
+    <nav class="top-tabs" aria-label="Study views">
+      <a class="top-tab" href="personas-overview.html" aria-current="page">Personas</a>
+      <a class="top-tab" href="journey-layers.html">User Journey</a>
+    </nav>
+  </header>
+
+
+  <div class="split">
+
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <h1 class="title display">Key personas for [product or problem]</h1>
+        <nav class="quick-nav" aria-label="Jump to a persona">
+          <a class="nav-row" href="#persona-persona-a" data-target="persona-persona-a">
+            <span class="nav-avatar display" aria-hidden="true">[</span>
+            <span class="nav-text">
+              <span class="nav-name display">[Name A]</span>
+              <span class="eyebrow">[Role A]</span>
+            </span>
+          </a>
+          <a class="nav-row" href="#persona-persona-b" data-target="persona-persona-b">
+            <span class="nav-avatar display" aria-hidden="true">[</span>
+            <span class="nav-text">
+              <span class="nav-name display">[Name B]</span>
+              <span class="eyebrow">[Role B]</span>
+            </span>
+          </a>
+        </nav>
+      </div>
+
+      <button class="method-trigger" id="method-trigger" type="button" aria-controls="view-method" aria-expanded="false">
+        <span>Research methodology</span>
+        <svg class="chev chev-right" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev chev-right-active" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev chev-down" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+
+    <div class="content">
+
+      <div class="view-personas">
+
+        <!-- [NAME A] -->
+        <article class="persona-card" id="persona-persona-a" aria-labelledby="name-persona-a">
+          <div class="card-inner">
+            <div class="card-top">
+              <div class="card-header">
+                <div class="photo photo--placeholder" role="img" aria-label="Placeholder portrait for the [Name A] persona">
+                  <span class="photo-initial display" aria-hidden="true">[</span>
+                  <span class="eyebrow" aria-hidden="true">Illustrative</span>
+                </div>
+                <div class="card-body">
+                  <div class="name-block">
+                    <p class="eyebrow">[Role A]</p>
+                    <h2 class="persona-name display" id="name-persona-a">[Name A]</h2>
+                  </div>
+                  <div class="tags-desc">
+                    <ul class="tags" aria-label="Character traits">
+                      <li class="tag">[Trait]</li>
+                      <li class="tag">[Trait]</li>
+                      <li class="tag">[Trait]</li>
+                      <li class="tag">[Trait]</li>
+                    </ul>
+                    <p class="description supersoft">[Two to four sentences: what [Name A] is responsible for, what their work looks like day to day, and the one thing that matters most to them in this study's context.]</p>
+                  </div>
+                </div>
+              </div>
+              <div class="table-frame"><dl class="attrs">
+                <div class="attr attr-gender"><dt>Gender</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-age"><dt>Age</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-location"><dt>Location</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-education"><dt>Education</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-job"><dt>Job</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-experience"><dt>Work experience</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-setup"><dt>Work setup</dt><dd>[Invented]</dd></div>
+              </dl></div>
+            </div>
+
+            <div class="persona-tabs" data-tabs>
+              <div class="tablist-wrap">
+                <div class="tablist" role="tablist" aria-label="[Name A] details">
+                  <button class="tab display" role="tab" id="persona-a-tab-goals" aria-controls="persona-a-goals" aria-selected="true">Goals</button>
+                  <button class="tab display" role="tab" id="persona-a-tab-motivations" aria-controls="persona-a-motivations" aria-selected="false" tabindex="-1">Motivations</button>
+                  <button class="tab display" role="tab" id="persona-a-tab-day" aria-controls="persona-a-day" aria-selected="false" tabindex="-1">Day-to-Day</button>
+                  <button class="tab display" role="tab" id="persona-a-tab-frustrations" aria-controls="persona-a-frustrations" aria-selected="false" tabindex="-1">Frustrations</button>
+                </div>
+              </div>
+
+              <ul class="bullets" role="tabpanel" id="persona-a-goals" aria-labelledby="persona-a-tab-goals">
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[Goal, phrased as the outcome they want.]</span></span><span class="source">n of N</span></li>
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[Goal.]</span></span><span class="source">n of N</span></li>
+              </ul>
+
+              <ul class="bullets" role="tabpanel" id="persona-a-motivations" aria-labelledby="persona-a-tab-motivations" hidden>
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[What drives them, and what they want from a tool or process.]</span></span><span class="source">n of N</span></li>
+              </ul>
+
+              <ul class="bullets" role="tabpanel" id="persona-a-day" aria-labelledby="persona-a-tab-day" hidden>
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[Observed routine or behavior.]</span></span><span class="source">n of N</span></li>
+              </ul>
+
+              <ul class="bullets" role="tabpanel" id="persona-a-frustrations" aria-labelledby="persona-a-tab-frustrations" hidden>
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[Pain point, specific enough to act on.]</span></span><span class="source">n of N</span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- [NAME B] -->
+        <article class="persona-card" id="persona-persona-b" aria-labelledby="name-persona-b">
+          <div class="card-inner">
+            <div class="card-top">
+              <div class="card-header">
+                <div class="photo photo--placeholder" role="img" aria-label="Placeholder portrait for the [Name B] persona">
+                  <span class="photo-initial display" aria-hidden="true">[</span>
+                  <span class="eyebrow" aria-hidden="true">Illustrative</span>
+                </div>
+                <div class="card-body">
+                  <div class="name-block">
+                    <p class="eyebrow">[Role B]</p>
+                    <h2 class="persona-name display" id="name-persona-b">[Name B]</h2>
+                  </div>
+                  <div class="tags-desc">
+                    <ul class="tags" aria-label="Character traits">
+                      <li class="tag">[Trait]</li>
+                      <li class="tag">[Trait]</li>
+                      <li class="tag">[Trait]</li>
+                      <li class="tag">[Trait]</li>
+                    </ul>
+                    <p class="description supersoft">[Two to four sentences: what [Name B] is responsible for, what their work looks like day to day, and the one thing that matters most to them in this study's context.]</p>
+                  </div>
+                </div>
+              </div>
+              <div class="table-frame"><dl class="attrs">
+                <div class="attr attr-gender"><dt>Gender</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-age"><dt>Age</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-location"><dt>Location</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-education"><dt>Education</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-job"><dt>Job</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-experience"><dt>Work experience</dt><dd>[Invented]</dd></div>
+                <div class="attr attr-setup"><dt>Work setup</dt><dd>[Invented]</dd></div>
+              </dl></div>
+            </div>
+
+            <div class="persona-tabs" data-tabs>
+              <div class="tablist-wrap">
+                <div class="tablist" role="tablist" aria-label="[Name B] details">
+                  <button class="tab display" role="tab" id="persona-b-tab-goals" aria-controls="persona-b-goals" aria-selected="true">Goals</button>
+                  <button class="tab display" role="tab" id="persona-b-tab-motivations" aria-controls="persona-b-motivations" aria-selected="false" tabindex="-1">Motivations</button>
+                  <button class="tab display" role="tab" id="persona-b-tab-day" aria-controls="persona-b-day" aria-selected="false" tabindex="-1">Day-to-Day</button>
+                  <button class="tab display" role="tab" id="persona-b-tab-frustrations" aria-controls="persona-b-frustrations" aria-selected="false" tabindex="-1">Frustrations</button>
+                </div>
+              </div>
+
+              <ul class="bullets" role="tabpanel" id="persona-b-goals" aria-labelledby="persona-b-tab-goals">
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[Goal, phrased as the outcome they want.]</span></span><span class="source">n of N</span></li>
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[Goal.]</span></span><span class="source">n of N</span></li>
+              </ul>
+
+              <ul class="bullets" role="tabpanel" id="persona-b-motivations" aria-labelledby="persona-b-tab-motivations" hidden>
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[What drives them, and what they want from a tool or process.]</span></span><span class="source">n of N</span></li>
+              </ul>
+
+              <ul class="bullets" role="tabpanel" id="persona-b-day" aria-labelledby="persona-b-tab-day" hidden>
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[Observed routine or behavior.]</span></span><span class="source">n of N</span></li>
+              </ul>
+
+              <ul class="bullets" role="tabpanel" id="persona-b-frustrations" aria-labelledby="persona-b-tab-frustrations" hidden>
+                <li class="bullet"><span class="bullet-content"><span class="bullet-dot">•</span><span class="bullet-text">[Pain point, specific enough to act on.]</span></span><span class="source">n of N</span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <section class="view-method" id="view-method" aria-labelledby="method-title" hidden>
+        <div class="method-panel">
+          <h2 class="method-title display" id="method-title">Research methodology</h2>
+          <div class="method-body">
+            <div class="table-frame"><div class="stats">
+              <div class="stat"><span class="stat-num">[N]</span><span class="stat-label">Participants</span></div>
+              <div class="stat"><span class="stat-num">[n]</span><span class="stat-label">[Segment A]</span></div>
+              <div class="stat"><span class="stat-num">[n]</span><span class="stat-label">[Segment B]</span></div>
+            </div></div>
+            <div class="method-text supersoft">
+              <p>[What the personas are built from: how many interviews, with whom, about what. One sentence on what each persona represents.]</p>
+              <p>[Name the source material: <span class="tip-term" tabindex="0">verbatim transcripts or generated notes<span class="tip-bubble">If notes are not verbatim, every claim is attributed paraphrase rather than a quote. Say who reviewed them.</span></span>. Say who reviewed the personas.]</p>
+            </div>
+
+            <details class="caveats">
+              <summary>Additional caveats</summary>
+              <div class="caveats-body">
+                <div class="caveat-group">
+                  <h3>Persona status</h3>
+                  <ul>
+                    <li><strong>[Name A] ([Role A]) is a finding</strong>, supported by [n] participants (P1, P2, P3). A persona needs 3+ participants to count as a finding.</li>
+                    <li><strong>[Name B] ([Role B]) is a hypothesis</strong>, supported by [n] participants. Below 3, label it a hypothesis, not a finding.</li>
+                  </ul>
+                </div>
+                <div class="caveat-group">
+                  <h3>Illustrative details</h3>
+                  <p>Names, portraits, gender, age, location, education, job, work experience and work setup are invented for readability. None of it is drawn from the interviews, and none of it describes a real participant. Participants are cited as P1 to Pn.</p>
+                </div>
+                <div class="caveat-group">
+                  <h3>Open questions: [Name A]</h3>
+                  <ul>
+                    <li>[What would change this persona if answered.]</li>
+                  </ul>
+                </div>
+                <div class="caveat-group">
+                  <h3>Open questions: [Name B]</h3>
+                  <ul>
+                    <li>[What would change this persona if answered.]</li>
+                  </ul>
+                </div>
+                <div class="caveat-group">
+                  <h3>Review status</h3>
+                  <p>[<code>ux-research-judge</code> verdict against <code>rubrics/synthesis.md</code>, what was fixed after each pass, and whether this is still a draft awaiting human review.]</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p>[Where the full synthesis and coding files live, and when these personas will be revisited.]</p>
+        <p class="mono">[Study] Research · [Month Year] · [Authors]</p>
+      </footer>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var body = document.body;
+    var page = document.getElementById('page');
+    var trigger = document.getElementById('method-trigger');
+    var methodView = document.getElementById('view-method');
+    var navRows = [].slice.call(document.querySelectorAll('.nav-row'));
+    var cards = [].slice.call(document.querySelectorAll('.persona-card'));
+    var desktop = window.matchMedia('(min-width: 1100px)');
+
+    /* ---- Persona section tabs ---- */
+    document.querySelectorAll('[data-tabs]').forEach(function (group) {
+      var tabs = [].slice.call(group.querySelectorAll('[role="tab"]'));
+      function select(tab, focus) {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+          document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+        });
+        if (focus) tab.focus();
+        tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { select(tab, false); });
+        tab.addEventListener('keydown', function (e) {
+          var next = null;
+          if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+          if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+          if (e.key === 'Home') next = tabs[0];
+          if (e.key === 'End') next = tabs[tabs.length - 1];
+          if (next) { e.preventDefault(); select(next, true); }
+        });
+      });
+    });
+
+    /* ---- Views (desktop) / accordion (mobile) ---- */
+    function setView(view) {
+      body.setAttribute('data-view', view);
+      methodView.hidden = view !== 'method';
+      trigger.setAttribute('aria-expanded', view === 'method' ? 'true' : 'false');
+      if (view === 'method') {
+        navRows.forEach(function (r) { r.classList.remove('is-active'); });
+      }
+    }
+    function setMobileOpen(open) {
+      page.classList.toggle('method-open', open);
+      methodView.hidden = !open;
+      trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    trigger.addEventListener('click', function () {
+      if (desktop.matches) {
+        setView('method');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        setMobileOpen(!page.classList.contains('method-open'));
+      }
+    });
+
+    navRows.forEach(function (row) {
+      row.addEventListener('click', function (e) {
+        var target = document.getElementById(row.getAttribute('data-target'));
+        if (!target) return;
+        e.preventDefault();
+        if (desktop.matches && body.getAttribute('data-view') !== 'personas') {
+          setView('personas');
+          requestAnimationFrame(function () { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+        } else {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    /* ---- Highlight the persona in view (desktop only) ---- */
+    var observer = 'IntersectionObserver' in window ? new IntersectionObserver(function (entries) {
+      if (body.getAttribute('data-view') !== 'personas') return;
+      entries.forEach(function (entry) {
+        var row = document.querySelector('.nav-row[data-target="' + entry.target.id + '"]');
+        if (row) row.classList.toggle('is-active', entry.isIntersecting);
+      });
+    }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 }) : null;
+
+    function syncToViewport(isDesktop) {
+      if (isDesktop) {
+        page.classList.remove('method-open');
+        setView(body.getAttribute('data-view') || 'personas');
+        if (observer) cards.forEach(function (c) { observer.observe(c); });
+      } else {
+        if (observer) observer.disconnect();
+        navRows.forEach(function (r) { r.classList.remove('is-active'); });
+        body.setAttribute('data-view', 'personas');
+        setMobileOpen(false);
+      }
+    }
+    syncToViewport(desktop.matches);
+    desktop.addEventListener('change', function (e) { syncToViewport(e.matches); });
+  })();
+</script>
+</body>
+</html>

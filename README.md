@@ -20,13 +20,15 @@ Its guiding rule:
 
 ## Visual overview
 
-**[Open the live visual overview](https://gwndrlng.github.io/research-engine/)**, a hosted hub where
+<a href="https://gwndrlng.github.io/research-engine/" target="_blank" rel="noopener"><b>Open the live visual overview</b></a>, a hosted hub where
 each view opens in its own browser tab.
 
-- 🗺️ [System architecture](https://gwndrlng.github.io/research-engine/docs/architecture.html), how the pieces fit together
+- 🗺️ <a href="https://gwndrlng.github.io/research-engine/docs/architecture.html" target="_blank" rel="noopener">System architecture</a>, how the pieces fit together
   · [source](docs/architecture.html)
-- 🧭 [Journey layers demo](https://gwndrlng.github.io/research-engine/docs/journey-layers-example.html), a filled-in synthetic example of the layered journey visual
+- 🧭 <a href="https://gwndrlng.github.io/research-engine/docs/journey-layers-example.html" target="_blank" rel="noopener">Journey layers demo</a>, a filled-in synthetic example of the layered journey visual
   · [source](docs/journey-layers-example.html)
+- 👤 <a href="https://gwndrlng.github.io/research-engine/docs/personas-example.html" target="_blank" rel="noopener">Personas demo</a>, a filled-in synthetic example of the personas overview, the standard design for persona deliverables
+  · [source](docs/personas-example.html) · [template](templates/personas-overview.html)
 
 ## Quickstart
 
@@ -90,7 +92,7 @@ templates/             # deliverable scaffolds
 rubrics/               # the judge's scoring checklists
 governance/            # PII, approval gate, approved-tools allowlist
 evals/                 # fixtures and harness that meta-evaluate the judge
-docs/                  # designed HTML for architecture and user journey
+docs/                  # designed HTML for architecture, journey layers, and personas
 projects/              # real studies live here. GITIGNORED, never committed
 scripts/               # guardrail-check.sh
 ```
